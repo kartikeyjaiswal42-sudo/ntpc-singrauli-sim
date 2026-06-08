@@ -1,0 +1,19 @@
+{
+  "name": "ntpc-singrauli-sim",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/ensure-models.mjs && vite build",
+    "preview": "vite preview --port 3000",
+    "bake-models": "node scripts/bake-models.mjs"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.1",
+    "vite": "^6.0.3"
+  }
+}

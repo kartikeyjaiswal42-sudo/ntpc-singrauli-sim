@@ -1,0 +1,22 @@
+/** Tiny pub/sub — decouples model, 3D scene, UI, and tour. */
+export class EventBus {
+  #listeners = new Map();
+
+  on(event, fn) {
+    if (!this.#listeners.has(event)) this.#listeners.set(event, new Set());
+    this.#listeners.get(event).add(fn);
+    return () => this.#listeners.get(event)?.delete(fn);
+  }
+
+  emit(event, payload) {
+    this.#listeners.get(event)?.forEach((fn) => fn(payload));
+  }
+}
+
+export const Events = {
+  STATE: 'state',
+  SELECT: 'select',
+  ZONE: 'zone',
+  TOUR: 'tour',
+  TICK: 'tick',
+};

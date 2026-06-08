@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NTPC Singrauli Stage-II · 3D Plant Simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./styles.css"/>
+</head>
+<body>
+  <div id="app">
+    <div id="viewport-wrap">
+      <canvas id="viewport"></canvas>
+      <div id="labels"></div>
+    </div>
+
+    <div class="zone-nav-bar" id="zone-nav"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <h1>NTPC Singrauli · Stage-II</h1>
+        <p>3D plant · coal → grid · drag to orbit · scroll to zoom</p>
+      </div>
+      <div class="hero" id="hero">—</div>
+      <div class="status-pill good" id="status-pill">On bars</div>
+      <button type="button" class="btn" id="btn-overview">Overview</button>
+      <nav class="modes">
+        <a class="mode active" href="./">3D</a>
+        <a class="mode" href="../illustrated/">2D</a>
+      </nav>
+    </header>
+
+    <aside class="side">
+      <div class="side-tabs">
+        <button type="button" class="stab active" data-tab="inspect">Inspect</button>
+        <button type="button" class="stab" data-tab="controls">Controls <span class="stab-n">17</span></button>
+      </div>
+      <div class="side-panel" id="panel-inspect">
+        <article class="detail" id="detail">
+          <p class="detail-placeholder">Click any labelled 3D component or pick from the list.</p>
+        </article>
+        <div class="zones scroll" id="zone-list"></div>
+      </div>
+      <div class="side-panel hidden" id="panel-controls">
+        <div id="impact-panel" class="impact-panel">
+          <p class="impact-none">Move any control — positive & negative impacts appear here instantly.</p>
+        </div>
+        <div class="controls-scroll" id="controls-list"></div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </aside>
+
+    <footer class="dock">
+      <div class="dock-actions" id="scenario-row"></div>
+      <div class="dock-actions">
+        <button class="btn" id="btn-pause">Pause</button>
+        <button class="btn" id="btn-ramp">Ramp 100%</button>
+        <button class="btn danger" id="btn-trip">Trip unit</button>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

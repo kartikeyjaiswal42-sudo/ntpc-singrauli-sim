@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>Bake GLTF</title></head>
+<body>
+  <p id="status">Baking GLTF models…</p>
+  <script type="module">
+    import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+    import { MODELS } from './scripts/model-builders.js';
+
+    const exporter = new GLTFExporter();
+    const status = document.getElementById('status');
+
+    for (const [name, build] of Object.entries(MODELS)) {
+      status.textContent = `Exporting ${name}…`;
+      const scene = build();
+      const buffer = await exporter.parseAsync(scene, { binary: true });
+      await window.__saveGlb(name, Array.from(new Uint8Array(buffer)));
+    }
+
+    window.__BAKE_DONE__ = true;
+    status.textContent = 'Done.';
+  </script>
+</body>
+</html>

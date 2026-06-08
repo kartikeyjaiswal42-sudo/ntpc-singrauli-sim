@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NTPC Singrauli Stage-II · 500 MW Plant Simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./styles.css"/>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>NTPC Singrauli · Stage-II</h1>
+        <p>500 MW · interactive operator console</p>
+      </div>
+      <div class="hero" id="hero">—</div>
+      <div class="status-pill" id="status-pill">Synchronised</div>
+      <nav class="modes">
+        <a class="mode active" href="./">Illustrated</a>
+        <a class="mode" href="../3d/">3D</a>
+        <a class="mode" href="../2d/">Photo</a>
+      </nav>
+    </header>
+
+    <main class="stage">
+      <div class="canvas-wrap">
+        <p class="canvas-hint">Click any equipment on the diagram · Controls tab has 17 operator inputs →</p>
+        <svg id="scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2800 980"
+             preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plant simulation"></svg>
+      </div>
+
+      <aside class="side">
+        <div class="side-tabs">
+          <button type="button" class="stab active" data-tab="inspect">Inspect</button>
+          <button type="button" class="stab" data-tab="controls">Controls <span class="stab-n" id="ctrl-count">17</span></button>
+        </div>
+
+        <div class="side-panel" id="panel-inspect">
+          <article class="detail" id="detail">
+            <p class="detail-placeholder">Click any equipment on the diagram or pick from the list below (coal → grid).</p>
+          </article>
+          <div class="zones" id="zone-list"></div>
+        </div>
+
+        <div class="side-panel hidden" id="panel-controls">
+          <div class="controls-scroll" id="controls-list"></div>
+        </div>
+
+        <div class="legend" id="legend"></div>
+      </aside>
+    </main>
+
+    <footer class="dock">
+      <div class="dock-actions" id="scenario-row"></div>
+      <div class="dock-actions">
+        <button class="btn" id="btn-pause">Pause</button>
+        <button class="btn" id="btn-ramp">Ramp 100%</button>
+        <button class="btn danger" id="btn-trip">Trip unit</button>
+      </div>
+    </footer>
+  </div>
+
+  <div id="boot-error" class="boot-error">
+    <h2>Cannot start</h2>
+    <p id="boot-error-msg"></p>
+    <p>Open <strong>http://localhost:3000/illustrated/</strong></p>
+  </div>
+
+  <script type="module">
+    import('./app.js').catch((e) => {
+      document.getElementById('boot-error').style.display = 'flex';
+      document.getElementById('boot-error-msg').textContent = e.message;
+    });
+  </script>
+</body>
+</html>

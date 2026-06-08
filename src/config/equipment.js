@@ -1,0 +1,105 @@
+/** Clickable equipment metadata — informed by site walk-through photos. */
+export const EQUIPMENT = {
+  stack: {
+    zone: 'fgd',
+    name: 'Chimney (Stack)',
+    desc: 'Red-white aviation-banded concrete stack — signature Singrauli skyline element.',
+    rows: (p) => [['SO₂ at stack', `${p.so2o} mg/Nm³`], ['Status', p.loadPct > 0 ? 'Emitting' : 'Idle']],
+  },
+  esp: {
+    zone: 'fgd',
+    name: 'ESP & Ash Hoppers',
+    desc: 'Electrostatic precipitator with inverted-pyramid fly-ash hoppers (>99.7% collection).',
+    rows: (p) => [['Flue gas', `${p.flue.toLocaleString()} Nm³/h`]],
+  },
+  fgd: {
+    zone: 'fgd',
+    name: 'FGD Absorber',
+    desc: 'Wet-limestone scrubber producing gypsum by-product.',
+    rows: (p) => [['SO₂ in/out', `${p.so2i} → ${p.so2o}`], ['Gypsum', `${p.gyp} t/h`]],
+  },
+  coal: {
+    zone: 'coal',
+    name: 'Coal Yard & Conveyor',
+    desc: 'Blue steel-truss conveyor gallery feeding boiler bunkers.',
+    rows: (p) => [['Coal rate', `${p.coal} t/h`]],
+  },
+  boiler: {
+    zone: 'boiler',
+    name: 'Boiler House',
+    desc: 'Natural-circulation drum boiler, MCR 1700 t/h steam.',
+    rows: (p) => [['Steam', `${p.steam} t/h`], ['Pressure', `${p.msP} kg/cm²`], ['Temp', `${p.msT} °C`]],
+  },
+  furnace: {
+    zone: 'boiler',
+    name: 'Furnace',
+    desc: 'Tangential pulverised-coal firing with radiant water walls.',
+    rows: (p) => [['Coal', `${p.coal} t/h`]],
+  },
+  turbine: {
+    zone: 'turbine',
+    name: 'Steam Turbine',
+    desc: 'Three-cylinder HP–IP–LP reheat machine.',
+    rows: (p) => [['Output', `${p.gross} MW`], ['Speed', `${p.rpm} rpm`]],
+  },
+  generator: {
+    zone: 'turbine',
+    name: 'Generator',
+    desc: '500 MW, 21 kV, hydrogen-cooled synchronous machine.',
+    rows: (p) => [['Gross', `${p.gross} MW`], ['Net', `${p.net} MW`], ['Freq', `${p.freq} Hz`]],
+  },
+  condenser: {
+    zone: 'condcw',
+    name: 'Condenser',
+    desc: 'Surface condenser maintaining high vacuum on LP exhaust.',
+    rows: (p) => [['Vacuum', `${p.vac} kg/cm²(g)`], ['CW ΔT', `+${p.cwRise} °C`]],
+  },
+  reservoir: {
+    zone: 'condcw',
+    name: 'Rihand Reservoir',
+    desc: 'Raw cooling-water source for the CW pump house.',
+    rows: (p) => [['CW flow', `~${p.cwFlow.toLocaleString()} m³/h`]],
+  },
+  pumphouse: {
+    zone: 'pumphouse',
+    name: 'CW Pump House',
+    desc: 'Vertical wet-pit pumps in a blue-truss hall — site pumps labelled C.W. PUMP No.12.',
+    rows: (p) => [['Duty pumps', '2×50%']],
+  },
+  cooltower: {
+    zone: 'aux',
+    name: 'Cooling Tower',
+    desc: 'Natural-draught hyperbolic tower for auxiliary cooling water.',
+    rows: () => [['Type', 'Natural draught']],
+  },
+  dm: {
+    zone: 'aux',
+    name: 'DM Water Plant',
+    desc: 'Ion-exchange make-up water for the steam cycle.',
+    rows: (p) => [['Make-up', `${p.dm} m³/h`]],
+  },
+  h2: {
+    zone: 'aux',
+    name: 'Hydrogen Plant',
+    desc: 'Electrolytic H₂ for generator casing cooling.',
+    rows: () => [['Purity', '>99.8%']],
+  },
+  chlor: {
+    zone: 'aux',
+    name: 'Chlorination',
+    desc: 'On-site electrochlorination — CHLORINATOR units dose CW.',
+    rows: () => [['Residual Cl₂', '~0.5 ppm']],
+  },
+  switchyard: {
+    zone: 'elec',
+    name: '400 kV Switchyard',
+    desc: 'Lattice transmission towers and GIS/aisle switchgear.',
+    rows: (p) => [['Net export', `${p.net} MW`]],
+  },
+  gt: {
+    zone: 'elec',
+    name: 'Generator Transformer',
+    desc: 'Steps 21 kV generator output to 400 kV transmission.',
+    rows: () => [['Ratio', '21 / 400 kV']],
+  },
+};

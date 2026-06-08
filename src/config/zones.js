@@ -1,0 +1,77 @@
+/** Camera waypoints for zone focus + auto tour (position, target). */
+export const ZONES = [
+  {
+    id: 'overview',
+    label: 'Full Plant',
+    color: '#3b9eff',
+    title: 'Singrauli Stage 2 — 500 MW Unit',
+    desc: 'Complete thermal cycle: coal firing, steam generation, turbine–generator, condenser, CW pumps, FGD, and 400 kV export.',
+    cam: { pos: [85, 55, 95], target: [0, 12, 0] },
+  },
+  {
+    id: 'coal',
+    label: 'Coal & Ash',
+    color: '#6b7a8a',
+    title: 'Coal Handling Plant',
+    desc: 'Conveyors from yard to bunkers and bowl mills. Fly ash collected at ESP pyramid hoppers.',
+    cam: { pos: [-42, 28, 38], target: [-28, 8, 5] },
+  },
+  {
+    id: 'boiler',
+    label: 'Boiler',
+    color: '#ff5c1a',
+    title: 'Steam Generator',
+    desc: 'Pulverised-coal tangential furnace, drum, superheater. Flame intensity follows generator load.',
+    cam: { pos: [-8, 32, 42], target: [-5, 18, 0] },
+  },
+  {
+    id: 'turbine',
+    label: 'Turbine–Gen',
+    color: '#f472b6',
+    title: 'Turbine & Generator',
+    desc: 'HP–IP–LP cylinders at 3000 rpm driving hydrogen-cooled 500 MW generator.',
+    cam: { pos: [22, 22, 38], target: [18, 10, 0] },
+  },
+  {
+    id: 'condcw',
+    label: 'Condenser & CW',
+    color: '#38bdf8',
+    title: 'Condenser & Cooling Water',
+    desc: 'LP exhaust condenses under vacuum. CW from Rihand reservoir through condenser tubes.',
+    cam: { pos: [28, 16, 48], target: [22, 6, 8] },
+  },
+  {
+    id: 'pumphouse',
+    label: 'Pump House',
+    color: '#1dd3c0',
+    title: 'CW Pump House',
+    desc: 'Row of vertical wet-pit pumps — blue motor barrels, green casings — under blue truss roof.',
+    cam: { pos: [52, 20, 28], target: [48, 8, 12] },
+  },
+  {
+    id: 'fgd',
+    label: 'FGD & Stack',
+    color: '#94a3b8',
+    title: 'FGD & Chimney',
+    desc: 'Red-white banded stack. ESP and wet-limestone FGD remove particulates and ~95% SO₂.',
+    cam: { pos: [-55, 38, 25], target: [-48, 28, 0] },
+  },
+  {
+    id: 'aux',
+    label: 'Auxiliaries',
+    color: '#4ade80',
+    title: 'Auxiliary Systems',
+    desc: 'DM water, hydrogen plant, chlorination, BFP, and natural-draught cooling tower.',
+    cam: { pos: [58, 24, -15], target: [50, 10, 5] },
+  },
+  {
+    id: 'elec',
+    label: 'Switchyard',
+    color: '#fbbf24',
+    title: '400 kV Switchyard',
+    desc: 'Generator transformer and lattice towers export net power to the Northern grid.',
+    cam: { pos: [38, 30, -42], target: [30, 14, -18] },
+  },
+];
+
+export const zoneById = (id) => ZONES.find((z) => z.id === id) ?? ZONES[0];

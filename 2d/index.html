@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NTPC Singrauli Stage-2 · 500 MW Performance Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./styles.css"/>
+</head>
+<body>
+  <div id="app">
+    <!-- ── Masthead ── -->
+    <header class="masthead">
+      <div class="mast-left">
+        <div class="mast-kicker">Operations Performance Review · Confidential</div>
+        <h1>NTPC Singrauli — Stage 2</h1>
+        <div class="mast-sub">500 MW coal-fired unit · live thermodynamic simulation &amp; heat-balance model
+          &nbsp;·&nbsp; <a class="mast-link" href="../illustrated/">🎨 Open illustrated view →</a></div>
+      </div>
+      <div class="mast-right">
+        <div class="scenario-label">Operating scenario</div>
+        <div class="scenario-row" id="scenario-row"></div>
+        <div class="run-state" id="run-state">
+          <span class="dot"></span><span id="run-text">Synchronised · on bars</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── KPI band ── -->
+    <section class="kpi-band" id="kpi-band"></section>
+
+    <!-- ── Main grid ── -->
+    <main class="grid">
+      <!-- Left: live equipment camera + energy balance + charts -->
+      <section class="col-flow">
+        <div class="panel viewport-panel">
+          <div class="panel-head">
+            <h2>Live equipment view</h2>
+            <span class="panel-note" id="cam-caption">Live site feed</span>
+          </div>
+          <div class="viewport" id="viewport">
+            <img class="vp-photo" id="vp-photo" alt="" decoding="async"/>
+            <div class="vp-grade"></div>
+            <div class="vp-layer" id="vp-layer">
+              <canvas class="vp-fx" id="vp-fx"></canvas>
+              <div class="vp-chips" id="vp-chips"></div>
+            </div>
+            <div class="vp-hud">
+              <span class="vp-rec"><i></i>LIVE</span>
+              <span class="vp-cam" id="vp-cam">CAM 01</span>
+              <span class="vp-time" id="vp-time">--:--:--</span>
+            </div>
+            <div class="vp-title">
+              <strong id="vp-label">Full Plant</strong>
+              <span id="vp-sub">Stage-2</span>
+            </div>
+          </div>
+          <div class="cam-strip" id="cam-strip"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Energy balance — where the coal energy goes</h2>
+            <span class="panel-note">% of fuel heat input</span>
+          </div>
+          <canvas id="energy-canvas" class="chart-energy"></canvas>
+        </div>
+
+        <div class="dual">
+          <div class="panel">
+            <div class="panel-head"><h2>Net efficiency vs load</h2></div>
+            <canvas id="eff-canvas" class="chart-eff"></canvas>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Net output (rolling)</h2><span class="panel-note" id="trend-now">—</span></div>
+            <canvas id="trend-canvas" class="chart-trend"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: live calculation ledger -->
+      <aside class="col-ledger">
+        <div class="panel ledger-panel">
+          <div class="panel-head sticky">
+            <h2>Live calculation ledger</h2>
+            <span class="panel-note" id="ledger-focus">Full plant</span>
+          </div>
+          <div class="ledger-scroll" id="ledger"></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- ── Control dock ── -->
+    <footer class="dock">
+      <div class="dock-group">
+        <div class="dock-slider">
+          <label>Unit load <output id="out-load">78%</output></label>
+          <input type="range" id="in-load" min="0" max="100" value="78"/>
+        </div>
+        <div class="dock-slider">
+          <label>Coal GCV <output id="out-gcv">3600</output></label>
+          <input type="range" id="in-gcv" min="2800" max="4500" step="50" value="3600"/>
+        </div>
+        <div class="dock-slider">
+          <label>Sulphur <output id="out-sul">0.42%</output></label>
+          <input type="range" id="in-sul" min="20" max="90" value="42"/>
+        </div>
+        <div class="dock-slider">
+          <label>CW inlet <output id="out-cw">27 °C</output></label>
+          <input type="range" id="in-cw" min="20" max="35" value="27"/>
+        </div>
+      </div>
+      <div class="dock-actions">
+        <button class="btn" id="btn-pause" title="Pause / resume">⏸ Pause</button>
+        <button class="btn" id="btn-ramp">Ramp 100%</button>
+        <button class="btn danger" id="btn-trip">Trip unit</button>
+        <button class="btn primary" id="btn-tour">▶ Guided tour</button>
+      </div>
+    </footer>
+
+    <!-- Tour toast -->
+    <div class="tour-toast hidden" id="tour-toast">
+      <span class="tour-num" id="tour-num"></span>
+      <div class="tour-copy"><strong id="tour-title"></strong><p id="tour-desc"></p></div>
+      <button class="btn sm" id="tour-skip">Skip</button>
+    </div>
+  </div>
+
+  <div id="boot-error" class="boot-error">
+    <h2>Cannot start</h2>
+    <p id="boot-error-msg"></p>
+    <p>Run <code>./start.sh</code> then open <strong>http://localhost:3000/2d/</strong></p>
+  </div>
+
+  <script type="module">
+    import('./app.js').catch((e) => {
+      const el = document.getElementById('boot-error');
+      el.style.display = 'flex';
+      document.getElementById('boot-error-msg').textContent = e.message;
+      console.error(e);
+    });
+  </script>
+</body>
+</html>
