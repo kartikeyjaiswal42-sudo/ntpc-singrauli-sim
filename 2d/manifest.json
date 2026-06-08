@@ -1,0 +1,3696 @@
+{
+  "total": 387,
+  "zones": {
+    "overview": {
+      "title": "Plant Overview",
+      "desc": "Entrance gate, aerial views, site layout \u2014 Singrauli Super Thermal Power Station."
+    },
+    "chimney_fgd": {
+      "title": "Chimney & Flue Gas / FGD",
+      "desc": "Stacks, ESP hoppers, flue-gas ducting, FGD absorber, limestone MCC."
+    },
+    "boiler": {
+      "title": "Boiler Island",
+      "desc": "Furnace structure, boiler house, draught fans, mills, firing system."
+    },
+    "coal": {
+      "title": "Coal Handling",
+      "desc": "Coal yard, conveyors, bunkers, mills, wagon tippler area."
+    },
+    "turbine": {
+      "title": "Turbine & Generator",
+      "desc": "Turbine hall, HP/IP/LP cylinders, generator stator, lube oil."
+    },
+    "condenser": {
+      "title": "Condenser & Heat Rejection",
+      "desc": "Condenser, vacuum system, LP exhaust, heat exchangers."
+    },
+    "pumphouse": {
+      "title": "CW Pump House",
+      "desc": "Circulating water pumps, intake sump, Rihand reservoir draw."
+    },
+    "feedwater": {
+      "title": "Feed-water & BFP",
+      "desc": "Boiler feed pumps, heaters, deaerator, condensate extraction."
+    },
+    "dm_water": {
+      "title": "DM Water Plant",
+      "desc": "Demineralisation \u2014 ion exchange, storage, make-up water."
+    },
+    "hydrogen": {
+      "title": "Hydrogen Plant",
+      "desc": "Electrolysers, H\u2082 storage, generator cooling gas system."
+    },
+    "chlorination": {
+      "title": "Chlorination Plant",
+      "desc": "Electrochlorinators, NaOCl dosing for cooling water."
+    },
+    "electrical": {
+      "title": "Electrical & Switchyard",
+      "desc": "400 kV switchyard, transformers, MCC, motor control centres."
+    },
+    "control": {
+      "title": "Control & Instrumentation",
+      "desc": "DCS panels, transmitters, control room, process notes."
+    },
+    "auxiliary": {
+      "title": "Auxiliary Systems",
+      "desc": "Compressed air, fuel oil, pumps, pipe racks, workshops."
+    }
+  },
+  "heroes": {
+    "overview": "IMG_20260529_123605.jpg",
+    "chimney_fgd": "IMG_20260601_105101.jpg",
+    "boiler": "IMG_20260601_102125.jpg",
+    "coal": "IMG_20260601_104828.jpg",
+    "turbine": "IMG_20260601_105659.jpg",
+    "condenser": "IMG_20260602_122407.jpg",
+    "pumphouse": "IMG_20260606_102201.jpg",
+    "feedwater": "IMG_20260601_105846.jpg",
+    "dm_water": "IMG_20260601_105101.jpg",
+    "hydrogen": "IMG_20260606_102806.jpg",
+    "chlorination": "IMG_20260606_113303.jpg",
+    "electrical": "IMG_20260601_105101.jpg",
+    "control": "IMG_20260601_105101.jpg",
+    "auxiliary": "IMG_20260601_101039.jpg"
+  },
+  "photos": {
+    "overview": [
+      {
+        "file": "IMG_20260529_123605.jpg"
+      },
+      {
+        "file": "IMG_20260529_123614.jpg"
+      },
+      {
+        "file": "IMG_20260530_111940.jpg"
+      },
+      {
+        "file": "IMG_20260530_111941.jpg"
+      },
+      {
+        "file": "IMG_20260530_131105.jpg"
+      },
+      {
+        "file": "IMG_20260530_131107.jpg"
+      },
+      {
+        "file": "IMG_20260601_101033.jpg"
+      },
+      {
+        "file": "IMG_20260601_101034.jpg"
+      },
+      {
+        "file": "IMG_20260601_101039.jpg"
+      },
+      {
+        "file": "IMG_20260601_101312.jpg"
+      },
+      {
+        "file": "IMG_20260601_101313.jpg"
+      },
+      {
+        "file": "IMG_20260601_101317.jpg"
+      },
+      {
+        "file": "IMG_20260601_102131.jpg"
+      },
+      {
+        "file": "IMG_20260601_102138.jpg"
+      },
+      {
+        "file": "IMG_20260601_102143.jpg"
+      },
+      {
+        "file": "IMG_20260601_102648.jpg"
+      },
+      {
+        "file": "IMG_20260601_102649.jpg"
+      },
+      {
+        "file": "IMG_20260601_102701.jpg"
+      },
+      {
+        "file": "IMG_20260601_102706.jpg"
+      },
+      {
+        "file": "IMG_20260601_102710.jpg"
+      },
+      {
+        "file": "IMG_20260601_102713.jpg"
+      },
+      {
+        "file": "IMG_20260601_102926.jpg"
+      },
+      {
+        "file": "IMG_20260601_103113.jpg"
+      },
+      {
+        "file": "IMG_20260601_103114.jpg"
+      },
+      {
+        "file": "IMG_20260601_103414.jpg"
+      },
+      {
+        "file": "IMG_20260601_103419.jpg"
+      },
+      {
+        "file": "IMG_20260601_104400.jpg"
+      },
+      {
+        "file": "IMG_20260601_104402.jpg"
+      },
+      {
+        "file": "IMG_20260601_104404.jpg"
+      },
+      {
+        "file": "IMG_20260601_104406.jpg"
+      },
+      {
+        "file": "IMG_20260601_104421.jpg"
+      },
+      {
+        "file": "IMG_20260601_104549.jpg"
+      },
+      {
+        "file": "IMG_20260601_104550.jpg"
+      },
+      {
+        "file": "IMG_20260601_104755.jpg"
+      },
+      {
+        "file": "IMG_20260601_104811.jpg"
+      },
+      {
+        "file": "IMG_20260601_104812.jpg"
+      },
+      {
+        "file": "IMG_20260601_104815.jpg"
+      },
+      {
+        "file": "IMG_20260601_104820.jpg"
+      },
+      {
+        "file": "IMG_20260601_104823.jpg"
+      },
+      {
+        "file": "IMG_20260601_104824.jpg"
+      },
+      {
+        "file": "IMG_20260601_104828.jpg"
+      },
+      {
+        "file": "IMG_20260601_104838.jpg"
+      },
+      {
+        "file": "IMG_20260601_104839.jpg"
+      },
+      {
+        "file": "IMG_20260601_104842.jpg"
+      },
+      {
+        "file": "IMG_20260601_104844.jpg"
+      },
+      {
+        "file": "IMG_20260601_105111.jpg"
+      },
+      {
+        "file": "IMG_20260601_105235.jpg"
+      },
+      {
+        "file": "IMG_20260601_105252.jpg"
+      },
+      {
+        "file": "IMG_20260601_105423.jpg"
+      },
+      {
+        "file": "IMG_20260601_105533.jpg"
+      },
+      {
+        "file": "IMG_20260601_105651.jpg"
+      },
+      {
+        "file": "IMG_20260601_105652.jpg"
+      },
+      {
+        "file": "IMG_20260601_105654.jpg"
+      },
+      {
+        "file": "IMG_20260601_105721.jpg"
+      },
+      {
+        "file": "IMG_20260601_105730.jpg"
+      },
+      {
+        "file": "IMG_20260601_105732.jpg"
+      },
+      {
+        "file": "IMG_20260602_115519.jpg"
+      },
+      {
+        "file": "IMG_20260602_115520.jpg"
+      },
+      {
+        "file": "IMG_20260602_115523.jpg"
+      },
+      {
+        "file": "IMG_20260602_115531.jpg"
+      },
+      {
+        "file": "IMG_20260604_110042.jpg"
+      }
+    ],
+    "chimney_fgd": [
+      {
+        "file": "IMG_20260601_105101.jpg"
+      },
+      {
+        "file": "IMG_20260601_105102.jpg"
+      },
+      {
+        "file": "IMG_20260601_191809.jpg"
+      },
+      {
+        "file": "IMG_20260602_113342.jpg"
+      },
+      {
+        "file": "IMG_20260602_113346.jpg"
+      },
+      {
+        "file": "IMG_20260602_113427.jpg"
+      },
+      {
+        "file": "IMG_20260602_113809_1.jpg"
+      },
+      {
+        "file": "IMG_20260602_114212.jpg"
+      },
+      {
+        "file": "IMG_20260605_115416.jpg"
+      },
+      {
+        "file": "IMG_20260605_115622.jpg"
+      },
+      {
+        "file": "IMG_20260605_115624.jpg"
+      },
+      {
+        "file": "IMG_20260605_115625.jpg"
+      },
+      {
+        "file": "IMG_20260605_115626.jpg"
+      },
+      {
+        "file": "IMG_20260605_115629.jpg"
+      }
+    ],
+    "boiler": [
+      {
+        "file": "IMG_20260601_102125.jpg"
+      },
+      {
+        "file": "IMG_20260601_102127.jpg"
+      },
+      {
+        "file": "IMG_20260601_102136.jpg"
+      },
+      {
+        "file": "IMG_20260601_103415.jpg"
+      },
+      {
+        "file": "IMG_20260601_104219.jpg"
+      },
+      {
+        "file": "IMG_20260602_110909.jpg"
+      },
+      {
+        "file": "IMG_20260602_111336.jpg"
+      },
+      {
+        "file": "IMG_20260602_111339.jpg"
+      },
+      {
+        "file": "IMG_20260602_111340.jpg"
+      },
+      {
+        "file": "IMG_20260602_111341.jpg"
+      },
+      {
+        "file": "IMG_20260602_111342.jpg"
+      },
+      {
+        "file": "IMG_20260602_112121.jpg"
+      },
+      {
+        "file": "IMG_20260602_112123.jpg"
+      },
+      {
+        "file": "IMG_20260602_112124.jpg"
+      },
+      {
+        "file": "IMG_20260602_112125.jpg"
+      },
+      {
+        "file": "IMG_20260602_112127.jpg"
+      },
+      {
+        "file": "IMG_20260602_112129.jpg"
+      },
+      {
+        "file": "IMG_20260602_112130.jpg"
+      },
+      {
+        "file": "IMG_20260602_112132.jpg"
+      },
+      {
+        "file": "IMG_20260602_112133.jpg"
+      },
+      {
+        "file": "IMG_20260602_112134.jpg"
+      },
+      {
+        "file": "IMG_20260602_112135.jpg"
+      },
+      {
+        "file": "IMG_20260602_112809.jpg"
+      },
+      {
+        "file": "IMG_20260602_112811.jpg"
+      },
+      {
+        "file": "IMG_20260602_112814.jpg"
+      },
+      {
+        "file": "IMG_20260602_112815.jpg"
+      },
+      {
+        "file": "IMG_20260602_112942.jpg"
+      },
+      {
+        "file": "IMG_20260602_112943.jpg"
+      },
+      {
+        "file": "IMG_20260602_112944.jpg"
+      },
+      {
+        "file": "IMG_20260602_113055.jpg"
+      },
+      {
+        "file": "IMG_20260602_113103.jpg"
+      },
+      {
+        "file": "IMG_20260602_113104.jpg"
+      },
+      {
+        "file": "IMG_20260602_113119.jpg"
+      },
+      {
+        "file": "IMG_20260602_113119_1.jpg"
+      },
+      {
+        "file": "IMG_20260602_113244.jpg"
+      },
+      {
+        "file": "IMG_20260602_113246.jpg"
+      },
+      {
+        "file": "IMG_20260602_113247.jpg"
+      },
+      {
+        "file": "IMG_20260602_113248.jpg"
+      },
+      {
+        "file": "IMG_20260602_113250.jpg"
+      },
+      {
+        "file": "IMG_20260602_113252.jpg"
+      },
+      {
+        "file": "IMG_20260602_113403.jpg"
+      },
+      {
+        "file": "IMG_20260602_113404.jpg"
+      },
+      {
+        "file": "IMG_20260602_113405.jpg"
+      },
+      {
+        "file": "IMG_20260602_113427.jpg"
+      },
+      {
+        "file": "IMG_20260602_113429.jpg"
+      },
+      {
+        "file": "IMG_20260602_113438.jpg"
+      },
+      {
+        "file": "IMG_20260602_113451.jpg"
+      },
+      {
+        "file": "IMG_20260602_113452.jpg"
+      },
+      {
+        "file": "IMG_20260602_113525.jpg"
+      },
+      {
+        "file": "IMG_20260602_113533.jpg"
+      },
+      {
+        "file": "IMG_20260602_113809.jpg"
+      },
+      {
+        "file": "IMG_20260602_113845.jpg"
+      },
+      {
+        "file": "IMG_20260602_113847.jpg"
+      },
+      {
+        "file": "IMG_20260602_113848.jpg"
+      },
+      {
+        "file": "IMG_20260602_113854.jpg"
+      },
+      {
+        "file": "IMG_20260602_113902.jpg"
+      },
+      {
+        "file": "IMG_20260602_113903.jpg"
+      },
+      {
+        "file": "IMG_20260602_113920.jpg"
+      },
+      {
+        "file": "IMG_20260602_114041.jpg"
+      },
+      {
+        "file": "IMG_20260602_114043.jpg"
+      },
+      {
+        "file": "IMG_20260602_114044.jpg"
+      },
+      {
+        "file": "IMG_20260602_114044_1.jpg"
+      },
+      {
+        "file": "IMG_20260602_115505.jpg"
+      },
+      {
+        "file": "IMG_20260602_115506.jpg"
+      },
+      {
+        "file": "IMG_20260602_115507.jpg"
+      },
+      {
+        "file": "IMG_20260602_115509.jpg"
+      },
+      {
+        "file": "IMG_20260602_115515.jpg"
+      },
+      {
+        "file": "IMG_20260602_115547.jpg"
+      },
+      {
+        "file": "IMG_20260602_115548.jpg"
+      },
+      {
+        "file": "IMG_20260602_115549.jpg"
+      },
+      {
+        "file": "IMG_20260602_120148.jpg"
+      },
+      {
+        "file": "IMG_20260602_120415.jpg"
+      },
+      {
+        "file": "IMG_20260602_120416.jpg"
+      },
+      {
+        "file": "IMG_20260602_120417.jpg"
+      }
+    ],
+    "coal": [
+      {
+        "file": "IMG_20260601_104828.jpg"
+      },
+      {
+        "file": "IMG_20260601_105248.jpg"
+      },
+      {
+        "file": "IMG_20260601_110514.jpg"
+      },
+      {
+        "file": "IMG_20260601_110517.jpg"
+      },
+      {
+        "file": "IMG_20260601_110540.jpg"
+      },
+      {
+        "file": "IMG_20260601_112828.jpg"
+      },
+      {
+        "file": "IMG_20260601_112922.jpg"
+      },
+      {
+        "file": "IMG_20260601_112923.jpg"
+      },
+      {
+        "file": "IMG_20260601_113006.jpg"
+      },
+      {
+        "file": "IMG_20260601_113357.jpg"
+      },
+      {
+        "file": "IMG_20260601_113358.jpg"
+      },
+      {
+        "file": "IMG_20260601_113408.jpg"
+      },
+      {
+        "file": "IMG_20260601_113418.jpg"
+      },
+      {
+        "file": "IMG_20260601_113423.jpg"
+      },
+      {
+        "file": "IMG_20260601_113433.jpg"
+      },
+      {
+        "file": "IMG_20260601_113527.jpg"
+      },
+      {
+        "file": "IMG_20260601_113533.jpg"
+      },
+      {
+        "file": "IMG_20260601_113534.jpg"
+      },
+      {
+        "file": "IMG_20260601_113536.jpg"
+      },
+      {
+        "file": "IMG_20260601_113538.jpg"
+      },
+      {
+        "file": "IMG_20260602_120113.jpg"
+      },
+      {
+        "file": "IMG_20260602_120131.jpg"
+      },
+      {
+        "file": "IMG_20260602_120132.jpg"
+      },
+      {
+        "file": "IMG_20260602_120134.jpg"
+      },
+      {
+        "file": "IMG_20260602_120147.jpg"
+      },
+      {
+        "file": "IMG_20260602_120419.jpg"
+      },
+      {
+        "file": "IMG_20260602_120422.jpg"
+      },
+      {
+        "file": "IMG_20260602_120426.jpg"
+      },
+      {
+        "file": "IMG_20260602_120646.jpg"
+      },
+      {
+        "file": "IMG_20260602_120648.jpg"
+      },
+      {
+        "file": "IMG_20260602_120650.jpg"
+      },
+      {
+        "file": "IMG_20260602_120652.jpg"
+      },
+      {
+        "file": "IMG_20260602_120655.jpg"
+      },
+      {
+        "file": "IMG_20260602_120659.jpg"
+      },
+      {
+        "file": "IMG_20260602_120723.jpg"
+      },
+      {
+        "file": "IMG_20260602_120724.jpg"
+      },
+      {
+        "file": "IMG_20260602_120724_1.jpg"
+      },
+      {
+        "file": "IMG_20260602_120800.jpg"
+      },
+      {
+        "file": "IMG_20260602_120801.jpg"
+      },
+      {
+        "file": "IMG_20260602_120836.jpg"
+      },
+      {
+        "file": "IMG_20260602_120837.jpg"
+      },
+      {
+        "file": "IMG_20260602_120844.jpg"
+      },
+      {
+        "file": "IMG_20260602_120847.jpg"
+      },
+      {
+        "file": "IMG_20260602_121105.jpg"
+      },
+      {
+        "file": "IMG_20260602_121122.jpg"
+      },
+      {
+        "file": "IMG_20260602_121129.jpg"
+      },
+      {
+        "file": "IMG_20260602_121130.jpg"
+      },
+      {
+        "file": "IMG_20260602_121150.jpg"
+      },
+      {
+        "file": "IMG_20260602_121151.jpg"
+      },
+      {
+        "file": "IMG_20260602_121255.jpg"
+      },
+      {
+        "file": "IMG_20260602_121310.jpg"
+      },
+      {
+        "file": "IMG_20260602_121310_1.jpg"
+      },
+      {
+        "file": "IMG_20260602_121311.jpg"
+      },
+      {
+        "file": "IMG_20260602_121320.jpg"
+      },
+      {
+        "file": "IMG_20260602_121322.jpg"
+      },
+      {
+        "file": "IMG_20260602_121327.jpg"
+      },
+      {
+        "file": "IMG_20260602_121353.jpg"
+      },
+      {
+        "file": "IMG_20260602_121404.jpg"
+      },
+      {
+        "file": "IMG_20260602_121728.jpg"
+      },
+      {
+        "file": "IMG_20260602_122024.jpg"
+      },
+      {
+        "file": "IMG_20260602_122025.jpg"
+      },
+      {
+        "file": "IMG_20260602_122026.jpg"
+      },
+      {
+        "file": "IMG_20260602_122027.jpg"
+      },
+      {
+        "file": "IMG_20260602_122030.jpg"
+      },
+      {
+        "file": "IMG_20260602_122031.jpg"
+      },
+      {
+        "file": "IMG_20260602_122037.jpg"
+      },
+      {
+        "file": "IMG_20260602_122138.jpg"
+      },
+      {
+        "file": "IMG_20260602_122139.jpg"
+      },
+      {
+        "file": "IMG_20260602_122202.jpg"
+      },
+      {
+        "file": "IMG_20260602_122206.jpg"
+      },
+      {
+        "file": "IMG_20260602_122208.jpg"
+      },
+      {
+        "file": "IMG_20260602_122248.jpg"
+      },
+      {
+        "file": "IMG_20260602_122249.jpg"
+      },
+      {
+        "file": "IMG_20260602_122255.jpg"
+      },
+      {
+        "file": "IMG_20260602_122256.jpg"
+      },
+      {
+        "file": "IMG_20260602_122300.jpg"
+      },
+      {
+        "file": "IMG_20260602_122311.jpg"
+      },
+      {
+        "file": "IMG_20260602_122312.jpg"
+      },
+      {
+        "file": "IMG_20260602_122331.jpg"
+      },
+      {
+        "file": "IMG_20260602_122333.jpg"
+      },
+      {
+        "file": "IMG_20260602_122334.jpg"
+      },
+      {
+        "file": "IMG_20260602_122340.jpg"
+      },
+      {
+        "file": "IMG_20260602_122341.jpg"
+      },
+      {
+        "file": "IMG_20260602_122356.jpg"
+      },
+      {
+        "file": "IMG_20260602_122407.jpg"
+      },
+      {
+        "file": "IMG_20260602_122635.jpg"
+      },
+      {
+        "file": "IMG_20260602_122636.jpg"
+      },
+      {
+        "file": "IMG_20260602_122636_1.jpg"
+      },
+      {
+        "file": "IMG_20260602_122642.jpg"
+      },
+      {
+        "file": "IMG_20260602_122646.jpg"
+      },
+      {
+        "file": "IMG_20260602_122647.jpg"
+      },
+      {
+        "file": "IMG_20260602_122649.jpg"
+      },
+      {
+        "file": "IMG_20260602_122733.jpg"
+      },
+      {
+        "file": "IMG_20260602_122734.jpg"
+      },
+      {
+        "file": "IMG_20260602_122735.jpg"
+      },
+      {
+        "file": "IMG_20260602_122803.jpg"
+      },
+      {
+        "file": "IMG_20260602_122804.jpg"
+      },
+      {
+        "file": "IMG_20260602_123147.jpg"
+      },
+      {
+        "file": "IMG_20260602_123151.jpg"
+      },
+      {
+        "file": "IMG_20260602_123155.jpg"
+      }
+    ],
+    "turbine": [
+      {
+        "file": "IMG_20260601_105659.jpg"
+      },
+      {
+        "file": "IMG_20260601_113358.jpg"
+      },
+      {
+        "file": "IMG_20260602_120953.jpg"
+      },
+      {
+        "file": "IMG_20260602_121727.jpg"
+      },
+      {
+        "file": "IMG_20260602_122407.jpg"
+      },
+      {
+        "file": "IMG_20260604_110029.jpg"
+      },
+      {
+        "file": "IMG_20260604_110030.jpg"
+      },
+      {
+        "file": "IMG_20260604_110032.jpg"
+      },
+      {
+        "file": "IMG_20260604_110036.jpg"
+      },
+      {
+        "file": "IMG_20260604_110041.jpg"
+      },
+      {
+        "file": "IMG_20260604_110044.jpg"
+      },
+      {
+        "file": "IMG_20260604_110046.jpg"
+      },
+      {
+        "file": "IMG_20260604_110047.jpg"
+      },
+      {
+        "file": "IMG_20260604_110052.jpg"
+      },
+      {
+        "file": "IMG_20260604_110053.jpg"
+      },
+      {
+        "file": "IMG_20260604_110102.jpg"
+      },
+      {
+        "file": "IMG_20260604_110108.jpg"
+      },
+      {
+        "file": "IMG_20260604_110109.jpg"
+      },
+      {
+        "file": "IMG_20260604_110113.jpg"
+      },
+      {
+        "file": "IMG_20260604_110134.jpg"
+      },
+      {
+        "file": "IMG_20260604_110138.jpg"
+      },
+      {
+        "file": "IMG_20260604_110146.jpg"
+      },
+      {
+        "file": "IMG_20260604_110149.jpg"
+      },
+      {
+        "file": "IMG_20260604_110150.jpg"
+      },
+      {
+        "file": "IMG_20260604_110153.jpg"
+      },
+      {
+        "file": "IMG_20260604_110156.jpg"
+      },
+      {
+        "file": "IMG_20260604_110200.jpg"
+      },
+      {
+        "file": "IMG_20260604_110223.jpg"
+      },
+      {
+        "file": "IMG_20260604_110234.jpg"
+      },
+      {
+        "file": "IMG_20260604_110238.jpg"
+      },
+      {
+        "file": "IMG_20260604_110243.jpg"
+      },
+      {
+        "file": "IMG_20260604_110248.jpg"
+      },
+      {
+        "file": "IMG_20260604_114006.jpg"
+      },
+      {
+        "file": "IMG_20260604_114009.jpg"
+      },
+      {
+        "file": "IMG_20260604_114136.jpg"
+      },
+      {
+        "file": "IMG_20260604_114255.jpg"
+      },
+      {
+        "file": "IMG_20260604_114417.jpg"
+      },
+      {
+        "file": "IMG_20260604_114503.jpg"
+      },
+      {
+        "file": "IMG_20260604_114534.jpg"
+      },
+      {
+        "file": "IMG_20260604_114539.jpg"
+      },
+      {
+        "file": "IMG_20260604_114629.jpg"
+      },
+      {
+        "file": "IMG_20260604_114823.jpg"
+      },
+      {
+        "file": "IMG_20260604_115015.jpg"
+      },
+      {
+        "file": "IMG_20260604_115016.jpg"
+      },
+      {
+        "file": "IMG_20260604_115018.jpg"
+      }
+    ],
+    "condenser": [
+      {
+        "file": "IMG_20260602_122407.jpg"
+      },
+      {
+        "file": "IMG_20260605_115622.jpg"
+      },
+      {
+        "file": "IMG_20260605_120711.jpg"
+      },
+      {
+        "file": "IMG_20260605_120714.jpg"
+      }
+    ],
+    "pumphouse": [
+      {
+        "file": "IMG_20260606_102201.jpg"
+      },
+      {
+        "file": "IMG_20260606_102205.jpg"
+      },
+      {
+        "file": "IMG_20260606_102206.jpg"
+      },
+      {
+        "file": "IMG_20260606_102209.jpg"
+      },
+      {
+        "file": "IMG_20260606_102218.jpg"
+      },
+      {
+        "file": "IMG_20260606_102348.jpg"
+      },
+      {
+        "file": "IMG_20260606_102348_1.jpg"
+      },
+      {
+        "file": "IMG_20260606_102349.jpg"
+      },
+      {
+        "file": "IMG_20260606_102401.jpg"
+      },
+      {
+        "file": "IMG_20260606_102405.jpg"
+      },
+      {
+        "file": "IMG_20260606_102411.jpg"
+      },
+      {
+        "file": "IMG_20260606_102444.jpg"
+      },
+      {
+        "file": "IMG_20260606_102549.jpg"
+      },
+      {
+        "file": "IMG_20260606_102550.jpg"
+      },
+      {
+        "file": "IMG_20260606_102643.jpg"
+      },
+      {
+        "file": "IMG_20260606_102646.jpg"
+      },
+      {
+        "file": "IMG_20260606_102806.jpg"
+      },
+      {
+        "file": "IMG_20260606_102812.jpg"
+      },
+      {
+        "file": "IMG_20260606_110716.jpg"
+      },
+      {
+        "file": "IMG_20260606_110717.jpg"
+      },
+      {
+        "file": "IMG_20260606_112345.jpg"
+      },
+      {
+        "file": "IMG_20260606_112356.jpg"
+      },
+      {
+        "file": "IMG_20260606_112358.jpg"
+      },
+      {
+        "file": "IMG_20260606_112412.jpg"
+      },
+      {
+        "file": "IMG_20260606_112428.jpg"
+      },
+      {
+        "file": "IMG_20260606_112430.jpg"
+      },
+      {
+        "file": "IMG_20260606_112433.jpg"
+      },
+      {
+        "file": "IMG_20260606_112434.jpg"
+      },
+      {
+        "file": "IMG_20260606_112823.jpg"
+      },
+      {
+        "file": "IMG_20260606_112830.jpg"
+      },
+      {
+        "file": "IMG_20260606_112833.jpg"
+      },
+      {
+        "file": "IMG_20260606_112835.jpg"
+      },
+      {
+        "file": "IMG_20260606_112858.jpg"
+      },
+      {
+        "file": "IMG_20260606_112910.jpg"
+      },
+      {
+        "file": "IMG_20260606_112918.jpg"
+      },
+      {
+        "file": "IMG_20260606_112919.jpg"
+      },
+      {
+        "file": "IMG_20260606_113004.jpg"
+      },
+      {
+        "file": "IMG_20260606_113007.jpg"
+      },
+      {
+        "file": "IMG_20260606_113303.jpg"
+      },
+      {
+        "file": "IMG_20260606_113307.jpg"
+      },
+      {
+        "file": "IMG_20260606_113316.jpg"
+      },
+      {
+        "file": "IMG_20260606_113319.jpg"
+      },
+      {
+        "file": "IMG_20260606_113448.jpg"
+      },
+      {
+        "file": "IMG_20260606_113451.jpg"
+      },
+      {
+        "file": "IMG_20260606_113453.jpg"
+      },
+      {
+        "file": "IMG_20260606_113504.jpg"
+      },
+      {
+        "file": "IMG_20260606_113609.jpg"
+      },
+      {
+        "file": "IMG_20260606_114217.jpg"
+      },
+      {
+        "file": "IMG_20260606_114219.jpg"
+      },
+      {
+        "file": "IMG_20260606_114220.jpg"
+      },
+      {
+        "file": "IMG_20260606_114237.jpg"
+      },
+      {
+        "file": "IMG_20260606_114238.jpg"
+      }
+    ],
+    "feedwater": [
+      {
+        "file": "IMG_20260601_105846.jpg"
+      },
+      {
+        "file": "IMG_20260605_120617.jpg"
+      },
+      {
+        "file": "IMG_20260605_120620.jpg"
+      },
+      {
+        "file": "IMG_20260605_120625.jpg"
+      },
+      {
+        "file": "IMG_20260605_120626.jpg"
+      },
+      {
+        "file": "IMG_20260605_120650.jpg"
+      },
+      {
+        "file": "IMG_20260605_120656.jpg"
+      },
+      {
+        "file": "IMG_20260605_120711.jpg"
+      },
+      {
+        "file": "IMG_20260605_120714.jpg"
+      },
+      {
+        "file": "IMG_20260605_120744.jpg"
+      },
+      {
+        "file": "IMG_20260605_120747.jpg"
+      },
+      {
+        "file": "IMG_20260605_120817.jpg"
+      },
+      {
+        "file": "IMG_20260605_120905.jpg"
+      },
+      {
+        "file": "IMG_20260605_120929.jpg"
+      },
+      {
+        "file": "IMG_20260605_120938.jpg"
+      },
+      {
+        "file": "IMG_20260605_121044.jpg"
+      },
+      {
+        "file": "IMG_20260605_121046.jpg"
+      },
+      {
+        "file": "IMG_20260605_121200.jpg"
+      },
+      {
+        "file": "IMG_20260605_121214.jpg"
+      },
+      {
+        "file": "IMG_20260605_121215.jpg"
+      },
+      {
+        "file": "IMG_20260605_122301.jpg"
+      },
+      {
+        "file": "IMG_20260606_102806.jpg"
+      }
+    ],
+    "dm_water": [
+      {
+        "file": "IMG_20260601_105101.jpg"
+      },
+      {
+        "file": "IMG_20260602_122407.jpg"
+      }
+    ],
+    "hydrogen": [
+      {
+        "file": "IMG_20260606_102806.jpg"
+      },
+      {
+        "file": "IMG_20260606_120457.jpg"
+      }
+    ],
+    "chlorination": [
+      {
+        "file": "IMG_20260606_113303.jpg"
+      },
+      {
+        "file": "IMG_20260606_120008.jpg"
+      },
+      {
+        "file": "IMG_20260606_120010.jpg"
+      },
+      {
+        "file": "IMG_20260606_120016.jpg"
+      },
+      {
+        "file": "IMG_20260606_120220.jpg"
+      },
+      {
+        "file": "IMG_20260606_120229.jpg"
+      },
+      {
+        "file": "IMG_20260606_120309.jpg"
+      },
+      {
+        "file": "IMG_20260606_120352.jpg"
+      },
+      {
+        "file": "IMG_20260606_120353.jpg"
+      },
+      {
+        "file": "IMG_20260606_120402.jpg"
+      },
+      {
+        "file": "IMG_20260606_120407.jpg"
+      },
+      {
+        "file": "IMG_20260606_120457.jpg"
+      },
+      {
+        "file": "IMG_20260606_120459.jpg"
+      },
+      {
+        "file": "IMG_20260606_120504.jpg"
+      },
+      {
+        "file": "IMG_20260606_120511.jpg"
+      },
+      {
+        "file": "IMG_20260606_120602.jpg"
+      },
+      {
+        "file": "IMG_20260606_120613.jpg"
+      },
+      {
+        "file": "IMG_20260606_120619.jpg"
+      },
+      {
+        "file": "IMG_20260606_120630.jpg"
+      },
+      {
+        "file": "IMG_20260606_120633.jpg"
+      },
+      {
+        "file": "IMG_20260606_121407.jpg"
+      }
+    ],
+    "electrical": [
+      {
+        "file": "IMG_20260601_105101.jpg"
+      },
+      {
+        "file": "IMG_20260601_105102.jpg"
+      },
+      {
+        "file": "IMG_20260601_105659.jpg"
+      },
+      {
+        "file": "IMG_20260602_115519.jpg"
+      },
+      {
+        "file": "IMG_20260605_115622.jpg"
+      }
+    ],
+    "control": [
+      {
+        "file": "IMG_20260601_105101.jpg"
+      },
+      {
+        "file": "IMG_20260601_105659.jpg"
+      },
+      {
+        "file": "IMG_20260601_191809.jpg"
+      }
+    ],
+    "auxiliary": [
+      {
+        "file": "IMG_20260601_101039.jpg"
+      },
+      {
+        "file": "IMG_20260601_191803.jpg"
+      },
+      {
+        "file": "IMG_20260601_191807.jpg"
+      },
+      {
+        "file": "IMG_20260602_102410.jpg"
+      },
+      {
+        "file": "IMG_20260604_110044.jpg"
+      },
+      {
+        "file": "IMG_20260604_114543.jpg"
+      },
+      {
+        "file": "IMG_20260605_120711.jpg"
+      },
+      {
+        "file": "IMG_20260606_102806.jpg"
+      }
+    ]
+  },
+  "all": [
+    {
+      "file": "IMG_20260529_123605.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260529_123614.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260530_111940.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260530_111941.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260530_131105.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260530_131107.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_101033.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_101034.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_101039.jpg",
+      "zones": [
+        "overview",
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260601_101312.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_101313.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_101317.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102125.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102127.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102131.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102136.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102138.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102143.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102648.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102649.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102701.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102706.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102710.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102713.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_102926.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_103113.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_103114.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_103414.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_103415.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260601_103419.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104219.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104400.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104402.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104404.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104406.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104421.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104549.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104550.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104755.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104811.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104812.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104815.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104820.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104823.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104824.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104828.jpg",
+      "zones": [
+        "overview",
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104838.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104839.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104842.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_104844.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105101.jpg",
+      "zones": [
+        "chimney_fgd",
+        "electrical",
+        "dm_water",
+        "control"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105102.jpg",
+      "zones": [
+        "chimney_fgd",
+        "electrical"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105111.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105235.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105248.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105252.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105423.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105533.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105651.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105652.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105654.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105659.jpg",
+      "zones": [
+        "turbine",
+        "control",
+        "electrical"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105721.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105730.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105732.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260601_105846.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260601_110514.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_110517.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_110540.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_112828.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_112922.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_112923.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113006.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113357.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113358.jpg",
+      "zones": [
+        "coal",
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113408.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113418.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113423.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113433.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113527.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113533.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113534.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113536.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_113538.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260601_191803.jpg",
+      "zones": [
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260601_191807.jpg",
+      "zones": [
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260601_191809.jpg",
+      "zones": [
+        "chimney_fgd",
+        "control"
+      ]
+    },
+    {
+      "file": "IMG_20260602_102410.jpg",
+      "zones": [
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260602_110909.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_111336.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_111339.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_111340.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_111341.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_111342.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112121.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112123.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112124.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112125.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112127.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112129.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112130.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112132.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112133.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112134.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112135.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112809.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112811.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112814.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112815.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112942.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112943.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_112944.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113055.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113103.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113104.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113119.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113119_1.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113244.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113246.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113247.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113248.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113250.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113252.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113342.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113346.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113403.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113404.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113405.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113427.jpg",
+      "zones": [
+        "chimney_fgd",
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113429.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113438.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113451.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113452.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113525.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113533.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113809.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113809_1.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113845.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113847.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113848.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113854.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113902.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113903.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_113920.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_114041.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_114043.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_114044.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_114044_1.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_114212.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115505.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115506.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115507.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115509.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115515.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115519.jpg",
+      "zones": [
+        "overview",
+        "electrical"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115520.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115523.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115531.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115547.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115548.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_115549.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120113.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120131.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120132.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120134.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120147.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120148.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120415.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120416.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120417.jpg",
+      "zones": [
+        "boiler"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120419.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120422.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120426.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120646.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120648.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120650.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120652.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120655.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120659.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120723.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120724.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120724_1.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120800.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120801.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120836.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120837.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120844.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120847.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_120953.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121105.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121122.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121129.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121130.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121150.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121151.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121255.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121310.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121310_1.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121311.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121320.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121322.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121327.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121353.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121404.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121727.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260602_121728.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122024.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122025.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122026.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122027.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122030.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122031.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122037.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122138.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122139.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122202.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122206.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122208.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122248.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122249.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122255.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122256.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122300.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122311.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122312.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122331.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122333.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122334.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122340.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122341.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122356.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122407.jpg",
+      "zones": [
+        "coal",
+        "turbine",
+        "condenser",
+        "dm_water"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122635.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122636.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122636_1.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122642.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122646.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122647.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122649.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122733.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122734.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122735.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122803.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_122804.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_123147.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_123151.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260602_123155.jpg",
+      "zones": [
+        "coal"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110029.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110030.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110032.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110036.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110041.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110042.jpg",
+      "zones": [
+        "overview"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110044.jpg",
+      "zones": [
+        "auxiliary",
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110046.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110047.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110052.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110053.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110102.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110108.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110109.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110113.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110134.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110138.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110146.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110149.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110150.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110153.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110156.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110200.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110223.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110234.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110238.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110243.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_110248.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114006.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114009.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114136.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114255.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114417.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114503.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114534.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114539.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114543.jpg",
+      "zones": [
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114629.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_114823.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_115015.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_115016.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260604_115018.jpg",
+      "zones": [
+        "turbine"
+      ]
+    },
+    {
+      "file": "IMG_20260605_115416.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260605_115622.jpg",
+      "zones": [
+        "chimney_fgd",
+        "condenser",
+        "electrical"
+      ]
+    },
+    {
+      "file": "IMG_20260605_115624.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260605_115625.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260605_115626.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260605_115629.jpg",
+      "zones": [
+        "chimney_fgd"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120617.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120620.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120625.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120626.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120650.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120656.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120711.jpg",
+      "zones": [
+        "condenser",
+        "feedwater",
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120714.jpg",
+      "zones": [
+        "condenser",
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120744.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120747.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120817.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120905.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120929.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_120938.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_121044.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_121046.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_121200.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_121214.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_121215.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260605_122301.jpg",
+      "zones": [
+        "feedwater"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102201.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102205.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102206.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102209.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102218.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102348.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102348_1.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102349.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102401.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102405.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102411.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102444.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102549.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102550.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102643.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102646.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102806.jpg",
+      "zones": [
+        "pumphouse",
+        "feedwater",
+        "hydrogen",
+        "auxiliary"
+      ]
+    },
+    {
+      "file": "IMG_20260606_102812.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_110716.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_110717.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112345.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112356.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112358.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112412.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112428.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112430.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112433.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112434.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112823.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112830.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112833.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112835.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112858.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112910.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112918.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_112919.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113004.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113007.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113303.jpg",
+      "zones": [
+        "pumphouse",
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113307.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113316.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113319.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113448.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113451.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113453.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113504.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_113609.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_114217.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_114219.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_114220.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_114237.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_114238.jpg",
+      "zones": [
+        "pumphouse"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120008.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120010.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120016.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120220.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120229.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120309.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120352.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120353.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120402.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120407.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120457.jpg",
+      "zones": [
+        "chlorination",
+        "hydrogen"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120459.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120504.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120511.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120602.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120613.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120619.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120630.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_120633.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    },
+    {
+      "file": "IMG_20260606_121407.jpg",
+      "zones": [
+        "chlorination"
+      ]
+    }
+  ]
+}

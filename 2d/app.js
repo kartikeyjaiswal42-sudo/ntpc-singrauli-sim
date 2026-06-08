@@ -2,6 +2,11 @@ import { runPlant, DESIGN, SCENARIOS } from './engine.js';
 import { SCENES, sceneById } from './scenes.js';
 import { EffectsLayer } from './effects.js';
 import { EnergyBar, EffCurve, Trend } from './charts.js';
+import manifest from './manifest.json' with { type: 'json' };
+
+const PHOTO_BASE = '/photos/';
+const photoUrl = (file) => `${PHOTO_BASE}${encodeURIComponent(file)}`;
+const zonePhotos = (zone) => manifest.photos[zone] || [];
 
 if (location.protocol === 'file:') {
   throw new Error('Open via http://localhost:3000/2d/ — run ./start.sh first');
@@ -16,7 +21,8 @@ const state = {
   cwInlet: 27,
   running: true,
   tripped: false,
-  cam: 'plant',
+  cam: 'overview',
+  photoFile: null,
   tourActive: false,
   tourIndex: 0,
 };
@@ -154,14 +160,49 @@ function syncInputs() {
 
 /* ── Camera viewport ─────────────────────────────────── */
 function renderCamStrip() {
-  $('cam-strip').innerHTML = SCENES.map((s) =>
-    `<button class="cam-btn${s.id === state.cam ? ' active' : ''}" data-cam="${s.id}">
+  $('cam-strip').innerHTML = SCENES.map((s) => {
+    const n = zonePhotos(s.zone).length;
+    return `<button class="cam-btn${s.id === state.cam ? ' active' : ''}" data-cam="${s.id}">
        <span class="cb-cam">CAM ${s.cam}</span>
-       <span class="cb-name">${s.label}</span>
-     </button>`).join('');
+       <span class="cb-name">${s.label}<span class="cb-n">${n}</span></span>
+     </button>`;
+  }).join('');
   $('cam-strip').querySelectorAll('.cam-btn').forEach((b) => {
     b.onclick = () => selectCamera(b.dataset.cam);
   });
+  $('photo-meta').textContent = `${manifest.total} site photos · 14 plant zones`;
+}
+
+function renderPhotoStrip(scene) {
+  const photos = zonePhotos(scene.zone);
+  const label = manifest.zones[scene.zone]?.title || scene.label;
+  $('photo-strip-label').textContent = label;
+  const idx = photos.findIndex((p) => p.file === state.photoFile);
+  $('photo-strip-count').textContent = photos.length
+    ? `${(idx >= 0 ? idx : 0) + 1} / ${photos.length}`
+    : '0 photos';
+
+  $('photo-strip').innerHTML = photos.map((p) =>
+    `<button type="button" class="photo-thumb${p.file === state.photoFile ? ' active' : ''}" data-file="${p.file}" title="${p.file}">
+       <img src="${photoUrl(p.file)}" alt="" loading="lazy" decoding="async"/>
+     </button>`).join('');
+
+  $('photo-strip').querySelectorAll('.photo-thumb').forEach((b) => {
+    b.onclick = () => selectPhoto(b.dataset.file);
+  });
+
+  const active = $('photo-strip').querySelector('.photo-thumb.active');
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function selectPhoto(file) {
+  if (!file || state.photoFile === file) return;
+  state.photoFile = file;
+  photo.classList.remove('ready');
+  photo.onload = () => { photo.classList.add('ready'); layoutLayer(); };
+  photo.src = photoUrl(file);
+  if (photo.complete && photo.naturalWidth) { photo.classList.add('ready'); layoutLayer(); }
+  renderPhotoStrip(sceneById(state.cam));
 }
 
 function buildChips(scene) {
@@ -193,7 +234,7 @@ function layoutLayer() {
   fx.resize();
 }
 
-function selectCamera(id) {
+function selectCamera(id, photoIndex = 0) {
   const scene = sceneById(id);
   state.cam = scene.id;
   $('cam-strip').querySelectorAll('.cam-btn').forEach((b) =>
@@ -204,13 +245,21 @@ function selectCamera(id) {
   $('cam-caption').textContent = scene.caption;
   $('ledger-focus').textContent = scene.section ? scene.label : 'Full plant';
 
-  photo.classList.remove('ready');
-  photo.onload = () => { photo.classList.add('ready'); layoutLayer(); };
-  photo.src = scene.photo;
-  if (photo.complete && photo.naturalWidth) { photo.classList.add('ready'); layoutLayer(); }
+  const photos = zonePhotos(scene.zone);
+  const hero = manifest.heroes[scene.zone];
+  const file = photos[photoIndex]?.file || hero || photos[0]?.file;
+  state.photoFile = file || null;
+
+  if (file) {
+    photo.classList.remove('ready');
+    photo.onload = () => { photo.classList.add('ready'); layoutLayer(); };
+    photo.src = photoUrl(file);
+    if (photo.complete && photo.naturalWidth) { photo.classList.add('ready'); layoutLayer(); }
+  }
 
   buildChips(scene);
   fx.setScene(scene.effects);
+  renderPhotoStrip(scene);
   if (currentResult) { updateChips(scene, currentResult); renderLedger(currentResult); }
   scrollLedgerToFocus();
 }
@@ -300,13 +349,14 @@ $('btn-trip').onclick = () => {
 
 /* ── Guided tour (camera walk-through) ───────────────── */
 const TOUR = [
-  { cam: 'plant', title: 'Singrauli Stage-2 · 500 MW', desc: 'Live site feed. Every figure overlaid on the photo is computed from coal, steam and cycle data — no lookup tables.' },
+  { cam: 'overview', title: 'Singrauli Stage-2 · 500 MW', desc: `Live site feed from ${manifest.total} photographs. Every overlay is computed from coal, steam and cycle data.` },
+  { cam: 'chimney_fgd', title: 'Stack & FGD', desc: 'ESP removes >99.9% particulate; wet-limestone FGD scrubs ~95% of SO₂.' },
   { cam: 'boiler', title: 'Boiler & bunker bay', desc: 'Pulverised coal is fired in the furnace; boiler efficiency (~86%) sets how much fuel heat reaches the steam.' },
-  { cam: 'furnace', title: 'Furnace fireball', desc: 'The combustion glow follows the firing rate. Furnace gas approaches ~1450 °C at full load.' },
-  { cam: 'turbine', title: 'Turbine–generator', desc: 'Steam expands through HP/IP/LP turbines spinning the generator at 3000 rpm. Shaft power = gross ÷ generator efficiency.' },
-  { cam: 'cwpump', title: 'CW pump house', desc: 'Circulating-water pumps reject the cycle’s latent heat — the single largest energy loss in the balance.' },
-  { cam: 'stack', title: 'Stack & emissions', desc: 'ESP removes >99.9% particulate; the plume you see is scrubbed flue gas. SO₂ and PM are tracked live.' },
-  { cam: 'fgd', title: 'FGD / scrubber', desc: 'Wet-limestone FGD scrubs ~95% of SO₂, producing gypsum as a saleable by-product.' },
+  { cam: 'coal', title: 'Coal handling', desc: 'MGR receipt through bunkers and XRP 1003 bowl mills to the furnace.' },
+  { cam: 'turbine', title: 'Turbine–generator', desc: 'Steam expands through HP/IP/LP turbines spinning the generator at 3000 rpm.' },
+  { cam: 'pumphouse', title: 'CW pump house', desc: 'Circulating-water pumps reject the cycle’s latent heat — the single largest energy loss.' },
+  { cam: 'chlorination', title: 'Chlorination plant', desc: 'Electrochlorination and biocide dosing for cooling-water biofouling control.' },
+  { cam: 'electrical', title: '400 kV switchyard', desc: 'Generator output stepped up for export to the national grid.' },
 ];
 
 function stopTour() {
@@ -350,6 +400,6 @@ renderScenarios();
 renderCamStrip();
 syncInputs();
 paint();
-selectCamera('plant');
+selectCamera('overview');
 requestAnimationFrame(loop);
 setInterval(paint, 200);
