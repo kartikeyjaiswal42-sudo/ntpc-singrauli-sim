@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({ channel:'chrome', args:['--enable-unsafe-swiftshader','--use-angle=swiftshader'] });
+const p = await b.newPage({ viewport:{width:1300,height:860} });
+const errs=[]; p.on('pageerror',e=>errs.push('ERR '+e.message));
+await p.goto('http://localhost:4199/3d/', { waitUntil:'load', timeout:60000 });
+await p.waitForTimeout(2500);
+await p.evaluate(()=>document.querySelector('.zone-chip[data-zone="z-boiler"]').click());
+await p.waitForTimeout(2500);
+await p.evaluate(()=>document.querySelector('.stab[data-tab="controls"]').click());
+await p.evaluate(()=>document.getElementById('tog-idFanOn').click());
+await p.waitForTimeout(3150);
+await p.screenshot({ path:'/tmp/boom3d.png' });
+await b.close();
+console.log(errs.length?errs.join('\n'):'no errors');

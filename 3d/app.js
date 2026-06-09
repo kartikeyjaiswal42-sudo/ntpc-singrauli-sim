@@ -6,6 +6,7 @@ import { EQUIPMENT, EQUIPMENT_GROUPS } from '../illustrated/components.js';
 import { buildPlant, pipeLegend, ZONE_PADS } from './plant.js';
 import { setupSky, setupEnvironment, Plume } from './fx.js';
 import { computeImpacts, CONTROL_HINTS } from '../shared/impacts.js';
+import { createProtection, stepProtection, resetProtection } from '../shared/protection.js';
 
 if (location.protocol === 'file:') {
   throw new Error('Open http://localhost:3000/3d/');
@@ -130,8 +131,11 @@ function buildControls() {
     } else {
       $(`tog-${c.key}`).onclick = () => {
         const baseline = lastResult || runPlant(plantInputs());
-        if (c.key === 'running') { state.running = !state.running; state.tripped = false; }
-        else state[c.key] = !state[c.key];
+        if (c.key === 'running') {
+          state.running = !state.running;
+          if (state.running && state.tripped) { resetProtection(P3); prot3 = { armed: [], trip: null }; clearBooms3D(); }
+          state.tripped = false;
+        } else state[c.key] = !state[c.key];
         syncControlOutputs();
         lastResult = runPlant(plantInputs());
         updateHUD(lastResult);
@@ -243,6 +247,22 @@ const towerPlumes = towerTops.map((t) => new Plume(scene, t, {
   driftX: 5, driftZ: 3, color: 0xffffff, opacity: 0.5,
 }));
 
+/* ── Protection / cascade-trip + 3D explosions ── */
+const P3 = createProtection();
+let prot3 = { armed: [], trip: null };
+const booms = [];
+let blackSmokeUntil = 0;
+const TRIP_POS = { 'c-furnace': new THREE.Vector3(0, 28, -20), 'c-stack': new THREE.Vector3(115, 40, -210) };
+function boom3D(target) {
+  let pos = TRIP_POS[target];
+  if (!pos) { pos = new THREE.Vector3(); (equipmentMeshes[target] || furnace || root).getWorldPosition(pos); }
+  const m = new THREE.Mesh(new THREE.SphereGeometry(3, 20, 16),
+    new THREE.MeshBasicMaterial({ color: 0xffd9a0, transparent: true, opacity: 1, fog: false }));
+  m.position.copy(pos); scene.add(m); booms.push({ m, t: 0 });
+  blackSmokeUntil = performance.now() / 1000 + 9;
+}
+function clearBooms3D() { booms.forEach((b) => { scene.remove(b.m); b.m.geometry.dispose(); }); booms.length = 0; blackSmokeUntil = 0; }
+
 const allLabels = [];
 root.traverse((o) => {
   if (o.element?.classList?.contains('plant-label') && !o.element.classList.contains('label-zone')) {
@@ -318,13 +338,17 @@ resize();
 
 function tickSim() {
   lastResult = runPlant(plantInputs());
+  const prot = stepProtection(P3, state, lastResult, 0.2, performance.now() / 1000);
+  prot3 = prot;
+  if (prot.justTripped) { state.tripped = true; rampTarget = null; boom3D(prot.trip.target); }
   updateHUD(lastResult);
   updateVisuals(lastResult);
 }
 
 function updateHUD(r) {
-  $('hero').textContent = state.tripped ? 'Unit tripped'
+  $('hero').textContent = state.tripped ? (prot3.trip ? `⛔ ${prot3.trip.head}` : 'Unit tripped')
     : !state.running ? 'Frozen'
+    : (prot3.armed && prot3.armed.length) ? `⚠ ${prot3.armed[0].head} in ${Math.ceil(prot3.armed[0].remain)}s`
     : `${fmt(r.netMW, 0)} MW · ${fmt(r.inputs.loadFrac * 100, 0)}%`;
 
   const pill = $('status-pill');
@@ -388,7 +412,11 @@ document.querySelectorAll('.stab').forEach((b) => {
 });
 
 $('btn-pause').onclick = () => { state.running = !state.running; $('btn-pause').textContent = state.running ? 'Pause' : 'Resume'; syncControlOutputs(); tickSim(); };
-$('btn-ramp').onclick = () => { state.tripped = false; state.running = true; state.fdFanOn = true; rampTarget = 100; state.loadSet = 100; syncControlOutputs(); tickSim(); };
+$('btn-ramp').onclick = () => {
+  state.tripped = false; state.running = true; state.fdFanOn = true; state.idFanOn = true; state.bcpOn = true;
+  resetProtection(P3); prot3 = { armed: [], trip: null }; clearBooms3D();
+  rampTarget = 100; state.loadSet = 100; syncControlOutputs(); tickSim();
+};
 $('btn-trip').onclick = () => { state.tripped = true; rampTarget = null; focusEquipment(null); tickSim(); };
 $('btn-overview').onclick = () => { camFrom.copy(camera.position); tgtFrom.copy(controls.target); camTo.set(280, 200, 320); tgtTo.set(10, 15, 10); camT = 0; focusEquipment(null); };
 
@@ -412,6 +440,7 @@ $('scenario-row').querySelectorAll('.scenario-chip').forEach((b) => {
     const s = SCENARIOS.find((x) => x.id === b.dataset.id);
     const baseline = lastResult;
     state.tripped = false; state.running = true; rampTarget = null;
+    resetProtection(P3); prot3 = { armed: [], trip: null }; clearBooms3D();
     state.loadSet = s.load; state.gcv = s.gcv; state.sulphur = s.sulphur; state.cwInlet = s.cwInlet; state.load = s.load;
     syncControlOutputs();
     lastResult = runPlant(plantInputs());
@@ -456,15 +485,23 @@ let tAcc = 0;
   /* ── live atmosphere + energy flow ── */
   const lf = lastResult?.inputs?.loadFrac ?? 0;
   const live = state.running && !state.tripped && (lastResult?.grossMW ?? 0) > 2 && state.fdFanOn;
-  stackPlume.setColor(state.fgdOn ? 0xb9bdc1 : 0x8a6f54);
-  stackPlume.update(dt, live ? 0.28 + lf * 0.85 : 0.015);
+  const blackNow = (performance.now() / 1000) < blackSmokeUntil;
+  stackPlume.setColor(blackNow ? 0x161616 : (state.fgdOn ? 0xb9bdc1 : 0x8a6f54));
+  stackPlume.update(dt, blackNow ? 1.0 : (live ? 0.28 + lf * 0.85 : 0.015));
   const towerInt = live ? 0.4 + lf * 0.6 : 0.04;
   towerPlumes.forEach((p) => p.update(dt, state.cwPumpPct > 0 ? towerInt : 0.02));
   const flow = live ? 0.35 + lf : 0.05;
   pipeFlows.forEach((f) => { f.tex.offset.x -= dt * flow * f.speed * 0.7; });
   waters.forEach((w, i) => { w.material.envMapIntensity = 1.1 + Math.sin(tAcc * 1.4 + i * 1.7) * 0.3; });
-  if (furnace?.material && live) {
-    furnace.material.emissiveIntensity = (0.4 + lf * 0.9) * (0.9 + Math.sin(tAcc * 9) * 0.12);
+  if (furnace?.material) {
+    furnace.material.emissiveIntensity = live
+      ? (0.4 + lf * 0.9) * (0.9 + Math.sin(tAcc * 9) * 0.12)
+      : (blackNow ? 2.2 : 0.02);
+  }
+  // expanding explosion fireballs
+  for (const b of booms) { b.t += dt; b.m.scale.setScalar(1 + b.t * 16); b.m.material.opacity = Math.max(0, 1 - b.t / 1.2); }
+  for (let i = booms.length - 1; i >= 0; i--) {
+    if (booms[i].t > 1.25) { scene.remove(booms[i].m); booms[i].m.geometry.dispose(); booms.splice(i, 1); }
   }
 
   controls.update();
