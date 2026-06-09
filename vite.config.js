@@ -14,6 +14,7 @@ export default defineConfig({
         plant2d: resolve(__dirname, '2d/index.html'),
         illustrated: resolve(__dirname, 'illustrated/index.html'),
         plant3d: resolve(__dirname, '3d/index.html'),
+        earth: resolve(__dirname, 'earth/index.html'),
       },
       output: {
         manualChunks: {

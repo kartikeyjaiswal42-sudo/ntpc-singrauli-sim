@@ -188,7 +188,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.0;
+renderer.toneMappingExposure = 0.92;
 
 const labelRenderer = new CSS2DRenderer({ element: labelLayer });
 labelRenderer.domElement.style.position = 'absolute';
@@ -207,8 +207,9 @@ controls.maxPolarAngle = Math.PI / 2.1;
 controls.target.set(10, 15, 10);
 
 // sun direction shared by the sky shader and the shadow-casting light
+// (polar 50° = 40° elevation; azimuth 205° = side/back light, sun out of the default view)
 const sunDir = new THREE.Vector3().setFromSphericalCoords(
-  1, THREE.MathUtils.degToRad(56), THREE.MathUtils.degToRad(115));
+  1, THREE.MathUtils.degToRad(50), THREE.MathUtils.degToRad(205));
 
 const hemi = new THREE.HemisphereLight(0xbcd6f2, 0x5d564a, 0.55);
 scene.add(hemi);

@@ -26,10 +26,10 @@ export function setupSky(scene, sunDir) {
   const sky = new Sky();
   sky.scale.setScalar(9000);
   const u = sky.material.uniforms;
-  u.turbidity.value = 5;
-  u.rayleigh.value = 1.7;
-  u.mieCoefficient.value = 0.005;
-  u.mieDirectionalG.value = 0.85;
+  u.turbidity.value = 4;
+  u.rayleigh.value = 2.3;
+  u.mieCoefficient.value = 0.004;
+  u.mieDirectionalG.value = 0.82;
   u.sunPosition.value.copy(sunDir);
   scene.add(sky);
   return sky;

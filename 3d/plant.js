@@ -61,6 +61,27 @@ function flowTexture() {
 // pipes whose emissive bands scroll to show flow direction; filled by pipe()
 const pipeFlows = [];
 
+// ── procedural ground/concrete textures (no external assets) ─────────────────
+function noiseTexture(base, dark, light, { size = 512, blots = 1400, repeat = 8 } = {}) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d');
+  g.fillStyle = base; g.fillRect(0, 0, size, size);
+  for (let i = 0; i < blots; i++) {
+    const x = Math.random() * size, y = Math.random() * size;
+    const r = 1 + Math.random() * 4;
+    g.fillStyle = Math.random() > 0.5 ? dark : light;
+    g.globalAlpha = 0.04 + Math.random() * 0.12;
+    g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+  }
+  g.globalAlpha = 1;
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(repeat, repeat);
+  t.anisotropy = 4;
+  return t;
+}
+
 function label(text, sub = '', hidden = true) {
   const el = document.createElement('div');
   el.className = `plant-label${hidden ? ' label-hidden' : ''}`;
@@ -184,15 +205,22 @@ export function buildPlant() {
   /* ── Site base (NTPC Singrauli plant area) ── */
   const site = new THREE.Mesh(
     new THREE.PlaneGeometry(620, 520),
-    mat(0x6b8f5a, 0x4a7040, 0.05),
+    new THREE.MeshStandardMaterial({
+      map: noiseTexture('#6f7d52', '#586945', '#869268', { repeat: 10 }),
+      roughness: 0.96, metalness: 0, envMapIntensity: 0.4,
+    }),
   );
   site.rotation.x = -Math.PI / 2;
   site.receiveShadow = true;
   root.add(site);
 
-  const pad = new THREE.Mesh(new THREE.PlaneGeometry(560, 420), mat(0x9aa090));
+  const pad = new THREE.Mesh(new THREE.PlaneGeometry(560, 420), new THREE.MeshStandardMaterial({
+    map: noiseTexture('#9a9f96', '#83887e', '#b0b4aa', { repeat: 9 }),
+    roughness: 0.92, metalness: 0.05, envMapIntensity: 0.45,
+  }));
   pad.rotation.x = -Math.PI / 2;
   pad.position.y = 0.05;
+  pad.receiveShadow = true;
   root.add(pad);
 
   const sign = label('NTPC SINGRAULI · STAGE-II · 500 MW', 'Singrauli · coal → grid', false);
@@ -202,7 +230,10 @@ export function buildPlant() {
   ZONE_PADS.forEach((zp) => {
     const pad = new THREE.Mesh(
       new THREE.PlaneGeometry(zp.w, zp.d),
-      mat(zp.color, zp.color, 0.04),
+      new THREE.MeshStandardMaterial({
+        color: zp.color, transparent: true, opacity: 0.14,
+        roughness: 1, metalness: 0, depthWrite: false,
+      }),
     );
     pad.rotation.x = -Math.PI / 2;
     pad.position.set(zp.x, 0.12, zp.z);
