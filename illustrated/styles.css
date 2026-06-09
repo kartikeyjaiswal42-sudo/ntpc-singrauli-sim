@@ -278,3 +278,7 @@ body.tripped #scene { --load: 0.02; }
 .cloud-c { animation: cloudDrift 200s linear infinite; }
 @keyframes cloudDrift { from { transform: translateX(-160px); } to { transform: translateX(2960px); } }
 body.paused .cloud, body.tripped .cloud { animation-play-state: paused; }
+
+/* poster depth: soft drop-shadow on equipment + zone panels */
+#scene .comp { filter: drop-shadow(0 4px 4px rgba(18,28,42,0.22)); }
+#scene .zone > rect { filter: drop-shadow(0 6px 8px rgba(18,28,42,0.14)); }

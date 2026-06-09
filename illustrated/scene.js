@@ -142,6 +142,16 @@ export function buildScene() {
       <stop offset="0" stop-color="#eaf7ff" stop-opacity="0"/>
       <stop offset="1" stop-color="#f3fbff" stop-opacity="0.85"/>
     </linearGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.44" r="0.78">
+      <stop offset="0.58" stop-color="#0a1420" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0a1420" stop-opacity="0.20"/>
+    </radialGradient>
+    <pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="9" stroke="#6b7888" stroke-width="0.8" opacity="0.22"/>
+    </pattern>
+    <linearGradient id="steelHi" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fdfefe"/><stop offset="0.5" stop-color="#cdd8e2"/><stop offset="1" stop-color="#94a3b2"/>
+    </linearGradient>
   </defs>`;
 
   const bg = `
@@ -204,6 +214,8 @@ export function buildScene() {
 
   const zoneBoiler = `<g class="zone" id="z-boiler">
     <rect x="620" y="50" width="220" height="700" rx="14" fill="url(#boilerGrad)" stroke="#7c8896" stroke-width="2"/>
+    <rect x="620" y="50" width="220" height="700" rx="14" fill="url(#hatch)"/>
+    <rect x="624" y="54" width="212" height="692" rx="12" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.4"/>
     ${lbl(730, 78, 'BOILER · CC+ · 170 kg/cm²', 'zone-title')}
   </g>`;
 
@@ -447,9 +459,12 @@ export function buildScene() {
     <g transform="translate(1910,700)"><g class="spin fan-spin" stroke="#fff" stroke-width="1.5"><line x1="-6" y1="0" x2="6" y2="0"/></g></g>
     ${lbl(1960, 710, 'Air dryer', 'unit-name xs')}`)}`;
 
+  const vignette = `<rect width="2800" height="980" fill="url(#vignette)" pointer-events="none"/>`;
+
   return defs + bg + pipes
     + zoneFuel + zoneDm + zoneBoiler + zoneTurbine + zoneCw + zoneEnv + zoneAsh + zoneH2 + zoneGrid + zoneAux
-    + fuelEquip + waterEquip + boilerEquip + turbineEquip + cwEquip + envEquip + ashEquip + h2Equip + gridEquip + auxEquip;
+    + fuelEquip + waterEquip + boilerEquip + turbineEquip + cwEquip + envEquip + ashEquip + h2Equip + gridEquip + auxEquip
+    + vignette;
 }
 
 export const LEGEND = [
