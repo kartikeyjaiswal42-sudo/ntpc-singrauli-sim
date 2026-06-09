@@ -115,9 +115,11 @@ function drawTrend(rated = 500) {
   g.fill();
 }
 
-export function updateDCS(r, s) {
+export function updateDCS(r, s, prot) {
   if (!document.getElementById('dcs-mw')) return;
   document.getElementById('dcs-mw').textContent = s.tripped ? '0' : f(r.netMW);
+  const screen = document.getElementById('view-dcs');
+  if (screen) screen.classList.toggle('dcs-tripped', !!s.tripped);
   const clk = document.getElementById('dcs-clock');
   if (clk) clk.textContent = new Date().toLocaleTimeString('en-GB');
 
@@ -132,22 +134,35 @@ export function updateDCS(r, s) {
     }
   }));
 
-  // alarms
+  // ── alarms: trip cascade > armed protections > steady warnings ──
   const A = [];
-  if (s.tripped) A.push(['crit', 'UNIT TRIPPED — turbine coasting down']);
-  if (s.running && !s.tripped && !s.fdFanOn) A.push(['crit', 'FD FAN STOPPED — combustion lost, MW = 0']);
-  if (s.running && !s.tripped && !s.idFanOn) A.push(['warn', 'ID FAN STOPPED — furnace draught abnormal']);
-  if (!s.bcpOn) A.push(['warn', 'BCP OFF — boiler circulation low (DNB risk)']);
-  if (!s.espOn) A.push(['warn', 'ESP OFF — particulate emission high']);
-  if (!s.fgdOn) A.push(['warn', 'FGD BYPASS — stack SO₂ rising']);
-  if (!s.clO2On) A.push(['info', 'BIOCIDE OFF — condenser bio-fouling risk']);
-  if (r.so2OutMg > 200 && s.fgdOn) A.push(['warn', `STACK SO₂ HIGH — ${f(r.so2OutMg)} mg/Nm³`]);
-  if (s.millsInService < 3 && s.loadSet > 70) A.push(['info', 'MILL OUT OF SERVICE — max load limited']);
-  if (s.cwInlet >= 33) A.push(['info', 'CW INLET HOT — vacuum / heat-rate penalty']);
+  let banner = '';
+  if (prot && prot.trip) {
+    // cascade in progress — newest event first
+    banner = `<div class="dcs-trip-banner">⛔ ${prot.trip.head} — UNIT TRIP IN PROGRESS</div>`;
+    prot.trip.lines.slice().reverse().forEach((ln) => A.push([ln.sev, ln.text]));
+  } else if (s.tripped) {
+    banner = '<div class="dcs-trip-banner">⛔ UNIT TRIPPED (manual) — turbine on barring gear</div>';
+    A.push(['crit', 'UNIT TRIPPED — generator breaker open, 0 MW']);
+  } else {
+    // armed protections counting down to a trip
+    (prot ? prot.armed : []).forEach((a) => {
+      const sev = a.remain < 4 ? 'crit' : 'warn';
+      A.push([sev, `⏳ PROTECTION ARMED · ${a.head} in ${Math.ceil(a.remain)}s — ${a.label}`]);
+    });
+    if (s.running && !s.fdFanOn) A.push(['crit', 'FD FAN STOPPED — combustion air lost']);
+    if (s.running && !s.idFanOn) A.push(['warn', 'ID FAN STOPPED — furnace draught abnormal']);
+    if (!s.bcpOn) A.push(['warn', 'BCP OFF — boiler circulation low (DNB risk)']);
+    if (!s.espOn) A.push(['warn', 'ESP OFF — particulate emission high']);
+    if (!s.fgdOn) A.push(['warn', 'FGD BYPASS — stack SO₂ above limit']);
+    if (!s.clO2On) A.push(['info', 'BIOCIDE OFF — condenser bio-fouling risk']);
+    if (s.millsInService < 3 && s.loadSet > 70) A.push(['info', 'MILL OUT OF SERVICE — max load limited']);
+    if (s.cwInlet >= 33) A.push(['info', 'CW INLET HOT — vacuum / heat-rate penalty']);
+  }
   const ael = document.getElementById('dcs-alarms');
-  if (ael) ael.innerHTML = A.length
+  if (ael) ael.innerHTML = banner + (A.length
     ? A.map(([c, t]) => `<span class="dcs-alm ${c}">${t}</span>`).join('')
-    : '<span class="dcs-alm ok">ALL SYSTEMS NORMAL · no active alarms</span>';
+    : '<span class="dcs-alm ok">ALL SYSTEMS NORMAL · no active alarms</span>');
 
   STATUS.forEach((st) => {
     const el = document.getElementById(`ind-${st.k}`);

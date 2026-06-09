@@ -2,7 +2,12 @@ import { runPlant, SCENARIOS } from '../2d/engine.js';
 import { buildScene, LEGEND, VIEWBOX } from './scene.js';
 import { buildPFD, updatePFD } from './pfd.js';
 import { buildDCS, updateDCS } from './dcs.js';
+import { createProtection, stepProtection, resetProtection } from '../shared/protection.js';
 import { EQUIPMENT, EQUIPMENT_GROUPS } from './components.js';
+
+const P = createProtection();
+let lastProt = { armed: [], trip: null };
+const SVGNS = 'http://www.w3.org/2000/svg';
 
 if (location.protocol === 'file:') {
   throw new Error('Open http://localhost:3000/illustrated/');
@@ -48,6 +53,8 @@ document.querySelectorAll('.vbtn').forEach((b) => {
     activeView = b.dataset.view;
     document.querySelectorAll('.vbtn').forEach((x) => x.classList.toggle('active', x === b));
     ['pfd', 'dcs', 'cutaway'].forEach((v) => $(`view-${v}`).classList.toggle('hidden', v !== activeView));
+    clearBooms();
+    if (state.tripped) restoreTripVisual();
     paint();
   };
 });
@@ -149,6 +156,7 @@ function buildControls() {
       $(`tog-${c.key}`).onclick = (e) => {
         if (c.key === 'running') {
           state.running = !state.running;
+          if (state.running && state.tripped) { resetProtection(P); lastProt = { armed: [], trip: null }; clearBooms(); }
           state.tripped = false;
         } else {
           state[c.key] = !state[c.key];
@@ -255,10 +263,72 @@ document.querySelectorAll('.stab').forEach((b) => {
   };
 });
 
+/* ── Trip / explosion visuals ────────────────────────── */
+function svgForView() {
+  if (activeView === 'cutaway') return $('scene');
+  if (activeView === 'pfd') return $('pfd');
+  return null;
+}
+function clearBooms() {
+  document.querySelectorAll('.boom').forEach((e) => e.remove());
+  document.querySelectorAll('.tripped').forEach((e) => e.classList.remove('tripped'));
+  document.body.classList.remove('boom-flash');
+}
+function spawnBoom(compId, explode) {
+  document.body.classList.add('boom-flash');
+  setTimeout(() => document.body.classList.remove('boom-flash'), 700);
+  const svg = svgForView();
+  if (!svg) return;
+  const sel = (window.CSS && CSS.escape) ? CSS.escape(compId) : compId;
+  const node = svg.querySelector('#' + sel);
+  if (!node) return;
+  node.classList.add('tripped');
+  let bb; try { bb = node.getBBox(); } catch (e) { return; }
+  const cx = bb.x + bb.width / 2, cy = bb.y + bb.height / 2, u = Math.max(bb.width, bb.height) || 60;
+  const g = document.createElementNS(SVGNS, 'g');
+  g.setAttribute('class', 'boom');
+  const circle = (r, fill, cls, stroke) => {
+    const c = document.createElementNS(SVGNS, 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r);
+    c.setAttribute('fill', fill); if (stroke) { c.setAttribute('stroke', stroke); c.setAttribute('stroke-width', u * 0.04); }
+    c.setAttribute('class', cls); return c;
+  };
+  if (explode) {
+    g.appendChild(circle(u * 1.1, '#ffce6b', 'fire f1'));
+    g.appendChild(circle(u * 0.8, '#ff7a1a', 'fire f2'));
+    g.appendChild(circle(u * 0.5, '#fff3c0', 'fire f3'));
+    g.appendChild(circle(u * 0.5, 'none', 'ring', '#fff'));
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2, d = u * (1.2 + Math.random() * 1.4);
+      const deb = circle(u * (0.03 + Math.random() * 0.05), '#2a1c0e', 'deb');
+      deb.style.setProperty('--dx', `${Math.cos(a) * d}px`);
+      deb.style.setProperty('--dy', `${Math.sin(a) * d}px`);
+      g.appendChild(deb);
+    }
+  }
+  const tr = circle(u * 0.72, 'none', 'tripring', '#ff3b30');
+  tr.setAttribute('stroke-dasharray', `${u * 0.09} ${u * 0.07}`);
+  g.appendChild(tr);
+  svg.appendChild(g);
+}
+function restoreTripVisual() {
+  if (lastProt.trip) spawnBoom(lastProt.trip.target, false);
+  else if (state.tripped) spawnBoom('c-gen', false);
+}
+
 /* ── Paint & dynamics ────────────────────────────────── */
 function paint() {
   lastResult = runPlant(plantInputs());
   const r = lastResult;
+
+  const prot = stepProtection(P, state, r, 0.2, performance.now() / 1000);
+  lastProt = prot;
+  if (prot.justTripped) {
+    state.tripped = true; rampTarget = null;
+    spawnBoom(prot.trip.target, prot.trip.explode);
+    syncControlOutputs();
+  }
+
   const on = state.running && !state.tripped && r.grossMW > 2 && state.fdFanOn;
 
   $('hero').textContent = state.tripped ? 'Unit tripped'
@@ -287,7 +357,7 @@ function paint() {
   });
 
   if (activeView === 'pfd') updatePFD(r, state);
-  else if (activeView === 'dcs') updateDCS(r, state);
+  else if (activeView === 'dcs') updateDCS(r, state, prot);
 
   if (state.focusComp) renderDetail(state.focusComp);
 }
@@ -309,6 +379,7 @@ function clearScenarios() {
 function applyScenario(s) {
   state.tripped = false;
   state.running = true;
+  resetProtection(P); lastProt = { armed: [], trip: null }; clearBooms();
   rampTarget = null;
   state.loadSet = s.load;
   state.gcv = s.gcv;
@@ -320,11 +391,15 @@ function applyScenario(s) {
 
 $('btn-pause').onclick = () => { state.running = !state.running; $('btn-pause').textContent = state.running ? 'Pause' : 'Resume'; syncControlOutputs(); };
 $('btn-ramp').onclick = () => {
-  state.tripped = false; state.running = true; state.fdFanOn = true;
+  state.tripped = false; state.running = true; state.fdFanOn = true; state.idFanOn = true; state.bcpOn = true;
+  resetProtection(P); lastProt = { armed: [], trip: null }; clearBooms();
   rampTarget = 100; state.loadSet = 100;
   syncControlOutputs(); clearScenarios();
 };
-$('btn-trip').onclick = () => { state.tripped = true; rampTarget = null; focusEquipment(null); };
+$('btn-trip').onclick = () => {
+  state.tripped = true; rampTarget = null; focusEquipment(null);
+  spawnBoom('c-gen', false);
+};
 
 $('scenario-row').innerHTML = SCENARIOS.map((s) =>
   `<button class="scenario-chip" data-id="${s.id}" title="${s.note}">${s.name}</button>`).join('');
