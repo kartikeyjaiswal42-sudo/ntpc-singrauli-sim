@@ -270,3 +270,11 @@ body.tripped #scene { --load: 0.02; }
   .zones { flex-direction: row; flex-wrap: wrap; }
   .zone-btn { flex: 1 1 140px; }
 }
+
+/* drifting clouds (parallax) */
+.cloud { transform-box: view-box; }
+.cloud-a { animation: cloudDrift 90s linear infinite; }
+.cloud-b { animation: cloudDrift 140s linear infinite; }
+.cloud-c { animation: cloudDrift 200s linear infinite; }
+@keyframes cloudDrift { from { transform: translateX(-160px); } to { transform: translateX(2960px); } }
+body.paused .cloud, body.tripped .cloud { animation-play-state: paused; }

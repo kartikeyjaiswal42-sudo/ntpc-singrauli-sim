@@ -133,14 +133,27 @@ export function buildScene() {
     <linearGradient id="limeGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#e8f5e9"/><stop offset="1" stop-color="#a5d6a7"/>
     </linearGradient>
+    <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff6cf" stop-opacity="0.95"/>
+      <stop offset="0.35" stop-color="#ffe680" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffe680" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hazeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eaf7ff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#f3fbff" stop-opacity="0.85"/>
+    </linearGradient>
   </defs>`;
 
   const bg = `
   <rect width="2800" height="900" fill="url(#skyGrad)"/>
-  <circle cx="2680" cy="70" r="48" fill="#ffdf6b" opacity="0.95"/>
-  <g class="cloud" fill="#fff" opacity="0.88">
-    <ellipse cx="900" cy="70" rx="50" ry="18"/><ellipse cx="940" cy="58" rx="36" ry="20"/>
+  <circle cx="2680" cy="70" r="220" fill="url(#sunGlow)"/>
+  <circle cx="2680" cy="70" r="46" fill="#fff3c0" opacity="0.98"/>
+  <g fill="#fff">
+    <g class="cloud cloud-a" opacity="0.9"><ellipse cx="900" cy="70" rx="52" ry="18"/><ellipse cx="942" cy="58" rx="38" ry="21"/><ellipse cx="858" cy="60" rx="30" ry="16"/></g>
+    <g class="cloud cloud-b" opacity="0.7"><ellipse cx="1700" cy="120" rx="60" ry="20"/><ellipse cx="1748" cy="106" rx="40" ry="22"/></g>
+    <g class="cloud cloud-c" opacity="0.55"><ellipse cx="380" cy="150" rx="44" ry="15"/><ellipse cx="416" cy="140" rx="30" ry="17"/></g>
   </g>
+  <rect y="660" width="2800" height="170" fill="url(#hazeGrad)"/>
   <rect y="820" width="2800" height="160" fill="url(#grassGrad)"/>
   <rect y="820" width="2800" height="4" fill="#4f9a39"/>
   <path d="M0,860 Q500,840 1000,855 T2000,848 T2800,860 L2800,920 L0,920 Z" fill="url(#waterGrad)" opacity="0.85"/>
