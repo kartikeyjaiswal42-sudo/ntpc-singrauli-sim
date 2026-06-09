@@ -4,6 +4,7 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { runPlant, SCENARIOS } from '../2d/engine.js';
 import { EQUIPMENT, EQUIPMENT_GROUPS } from '../illustrated/components.js';
 import { buildPlant, pipeLegend, ZONE_PADS } from './plant.js';
+import { setupSky, setupEnvironment, Plume } from './fx.js';
 import { computeImpacts, CONTROL_HINTS } from '../shared/impacts.js';
 
 if (location.protocol === 'file:') {
@@ -185,8 +186,9 @@ const labelLayer = $('labels');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+renderer.toneMappingExposure = 1.0;
 
 const labelRenderer = new CSS2DRenderer({ element: labelLayer });
 labelRenderer.domElement.style.position = 'absolute';
@@ -194,10 +196,9 @@ labelRenderer.domElement.style.inset = '0';
 labelRenderer.domElement.style.pointerEvents = 'none';
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87ceeb);
-scene.fog = new THREE.Fog(0xb8dcf0, 280, 650);
+scene.fog = new THREE.Fog(0xcddbe6, 330, 780);
 
-const camera = new THREE.PerspectiveCamera(50, 1, 1, 800);
+const camera = new THREE.PerspectiveCamera(50, 1, 1, 20000);
 camera.position.set(280, 200, 320);
 
 const controls = new OrbitControls(camera, canvas);
@@ -205,19 +206,41 @@ controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 2.1;
 controls.target.set(10, 15, 10);
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-const sun = new THREE.DirectionalLight(0xfff8ee, 1.2);
-sun.position.set(80, 120, 60);
+// sun direction shared by the sky shader and the shadow-casting light
+const sunDir = new THREE.Vector3().setFromSphericalCoords(
+  1, THREE.MathUtils.degToRad(56), THREE.MathUtils.degToRad(115));
+
+const hemi = new THREE.HemisphereLight(0xbcd6f2, 0x5d564a, 0.55);
+scene.add(hemi);
+scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+const sun = new THREE.DirectionalLight(0xfff3e0, 2.1);
+sun.position.copy(sunDir).multiplyScalar(320);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -200;
-sun.shadow.camera.right = 200;
-sun.shadow.camera.top = 200;
-sun.shadow.camera.bottom = -200;
+sun.shadow.camera.left = -240;
+sun.shadow.camera.right = 240;
+sun.shadow.camera.top = 240;
+sun.shadow.camera.bottom = -240;
+sun.shadow.camera.far = 900;
+sun.shadow.bias = -0.0004;
 scene.add(sun);
 
-const { root, pickables, spinners, glows, furnace, positions: equipmentMeshes } = buildPlant();
+setupEnvironment(scene, renderer);
+setupSky(scene, sunDir);
+
+const { root, pickables, spinners, glows, furnace, positions: equipmentMeshes,
+  stackTop, towerTops, waters, pipeFlows } = buildPlant();
 scene.add(root);
+
+/* ── Live atmosphere: stack smoke + cooling-tower steam plumes ── */
+const stackPlume = new Plume(scene, stackTop, {
+  count: 44, rise: 12, spread: 5, size0: 7, size1: 42, life: 6,
+  driftX: 9, driftZ: 4, color: 0xb8bcc0, opacity: 0.4,
+});
+const towerPlumes = towerTops.map((t) => new Plume(scene, t, {
+  count: 30, rise: 7, spread: 9, size0: 12, size1: 48, life: 5.5,
+  driftX: 5, driftZ: 3, color: 0xffffff, opacity: 0.5,
+}));
 
 const allLabels = [];
 root.traverse((o) => {
@@ -405,9 +428,11 @@ tickSim();
 
 const clock = new THREE.Clock();
 let simAcc = 0;
+let tAcc = 0;
 (function loop() {
   requestAnimationFrame(loop);
   const dt = clock.getDelta();
+  tAcc += dt;
   physicsStep(Math.min(0.05, dt));
   simAcc += dt;
   if (simAcc > 0.2) {
@@ -425,6 +450,20 @@ let simAcc = 0;
   if (state.running && !state.tripped) {
     const rpm = lastResult?.inputs?.loadFrac ?? 0;
     spinners.forEach((o) => { o.rotation.y += dt * (1 + rpm * 5); });
+  }
+
+  /* ── live atmosphere + energy flow ── */
+  const lf = lastResult?.inputs?.loadFrac ?? 0;
+  const live = state.running && !state.tripped && (lastResult?.grossMW ?? 0) > 2 && state.fdFanOn;
+  stackPlume.setColor(state.fgdOn ? 0xb9bdc1 : 0x8a6f54);
+  stackPlume.update(dt, live ? 0.28 + lf * 0.85 : 0.015);
+  const towerInt = live ? 0.4 + lf * 0.6 : 0.04;
+  towerPlumes.forEach((p) => p.update(dt, state.cwPumpPct > 0 ? towerInt : 0.02));
+  const flow = live ? 0.35 + lf : 0.05;
+  pipeFlows.forEach((f) => { f.tex.offset.x -= dt * flow * f.speed * 0.7; });
+  waters.forEach((w, i) => { w.material.envMapIntensity = 1.1 + Math.sin(tAcc * 1.4 + i * 1.7) * 0.3; });
+  if (furnace?.material && live) {
+    furnace.material.emissiveIntensity = (0.4 + lf * 0.9) * (0.9 + Math.sin(tAcc * 9) * 0.12);
   }
 
   controls.update();

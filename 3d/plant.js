@@ -22,10 +22,44 @@ const COL = {
 
 function mat(color, emissive = 0, ei = 0) {
   return new THREE.MeshStandardMaterial({
-    color, metalness: 0.25, roughness: 0.65,
+    color, metalness: 0.45, roughness: 0.52,
     emissive: emissive || color, emissiveIntensity: ei,
+    envMapIntensity: 0.9,
   });
 }
+
+// reflective water surface — relies on scene.environment for the sky reflection
+function waterMat(color = 0x2f6f96) {
+  return new THREE.MeshStandardMaterial({
+    color, metalness: 0.55, roughness: 0.08,
+    envMapIntensity: 1.3, transparent: true, opacity: 0.92,
+  });
+}
+
+// ── flowing-energy texture for pipes (bright bands on a dark strip) ──────────
+let _flowTex = null;
+function flowTexture() {
+  if (_flowTex) return _flowTex;
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 8;
+  const g = c.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, 128, 8);
+  for (let i = 0; i < 4; i++) {
+    const x = i * 32;
+    const grad = g.createLinearGradient(x, 0, x + 24, 0);
+    grad.addColorStop(0, 'rgba(255,255,255,0)');
+    grad.addColorStop(0.5, 'rgba(255,255,255,1)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grad; g.fillRect(x, 0, 24, 8);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  _flowTex = t;
+  return t;
+}
+
+// pipes whose emissive bands scroll to show flow direction; filled by pipe()
+const pipeFlows = [];
 
 function label(text, sub = '', hidden = true) {
   const el = document.createElement('div');
@@ -80,15 +114,47 @@ function cyl(rt, rb, h, seg, color, id, zone, lbl, sub) {
   return part(id, zone, m, 0, h / 2 + 5, 0, lbl, sub);
 }
 
-function pipe(points, radius, color, name) {
+function pipe(points, radius, color, name, speed = 1) {
   const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)));
-  const geo = new THREE.TubeGeometry(curve, 48, radius, 10, false);
+  const len = curve.getLength();
+  const geo = new THREE.TubeGeometry(curve, 64, radius, 12, false);
+  const tex = flowTexture().clone();
+  tex.needsUpdate = true;
+  tex.repeat.set(Math.max(2, Math.round(len / 14)), 1);
   const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-    color, emissive: color, emissiveIntensity: 0.35,
-    metalness: 0.15, roughness: 0.4,
+    color, emissive: color, emissiveIntensity: 0.45,
+    emissiveMap: tex, metalness: 0.5, roughness: 0.35, envMapIntensity: 0.8,
   }));
+  mesh.castShadow = true;
   mesh.userData.pipe = name;
+  pipeFlows.push({ tex, speed });
   return mesh;
+}
+
+// red/white banded RCC chimney (reads instantly as a power-station stack)
+function bandedStack(rTop, rBot, h, segH, id, zone, lbl, sub) {
+  const g = new THREE.Group();
+  g.userData = { id, zone };
+  const bands = Math.round(h / segH);
+  for (let i = 0; i < bands; i++) {
+    const t0 = i / bands, t1 = (i + 1) / bands;
+    const r0 = rBot + (rTop - rBot) * t0;
+    const r1 = rBot + (rTop - rBot) * t1;
+    const seg = new THREE.Mesh(
+      new THREE.CylinderGeometry(r1, r0, segH + 0.02, 24),
+      new THREE.MeshStandardMaterial({
+        color: i % 2 ? 0xb23a2e : 0xf2f2ee,
+        metalness: 0.1, roughness: 0.85, envMapIntensity: 0.6,
+      }),
+    );
+    seg.position.y = h * t0 + segH / 2;
+    seg.castShadow = true;
+    g.add(seg);
+  }
+  const l = label(lbl, sub);
+  l.position.set(0, h + 6, 0);
+  g.add(l);
+  return g;
 }
 
 /** NTPC Singrauli Stage-II — spaced 3D layout (metres, Y up) */
@@ -110,6 +176,10 @@ export function buildPlant() {
   };
 
   const positions = {};
+  const waters = [];
+  const towerTops = [];
+  let stackTop = null;
+  pipeFlows.length = 0;
 
   /* ── Site base (NTPC Singrauli plant area) ── */
   const site = new THREE.Mesh(
@@ -235,7 +305,9 @@ export function buildPlant() {
   add(box(3, 3, 4, 0x2890e8, 'c-bfp-boost', 'z-turbine', 'Booster BFP', ''), 58, 1.5, 25);
 
   /* ═══ WATER TREATMENT (far south-west) ═══ */
-  add(part('c-forebay', 'z-dm', new THREE.Mesh(new THREE.BoxGeometry(50, 2, 30), mat(COL.water, COL.water, 0.08)), 0, 6, 0, 'Raw water forebay', 'Rihand canal'), -210, 1, 175);
+  const forebayWater = new THREE.Mesh(new THREE.BoxGeometry(50, 2, 30), waterMat(0x2c6a8f));
+  waters.push(forebayWater);
+  add(part('c-forebay', 'z-dm', forebayWater, 0, 6, 0, 'Raw water forebay', 'Rihand canal'), -210, 1, 175);
   add(box(32, 10, 14, 0x64b5f6, 'c-dm', 'z-dm', 'DM Water Plant', 'SAC·Degas·SBA·MB'), -155, 5, 155);
   add(cyl(6, 6, 8, 12, 0x78909c, 'c-deaerator', 'z-dm', 'Deaerator', 'O₂ removal'), -95, 4, 140);
 
@@ -257,15 +329,25 @@ export function buildPlant() {
   const tower = (x, z) => {
     const g = new THREE.Group();
     g.userData = { id: 'c-ct', zone: 'z-cw' };
-    const t = new THREE.Mesh(new THREE.CylinderGeometry(8, 14, 38, 16, 1, true), mat(0xd0e8f4));
+    // hyperboloid-ish shell: narrow waist then flare to a wider throat
+    const t = new THREE.Mesh(new THREE.CylinderGeometry(11, 15, 38, 28, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0xcdd9e0, metalness: 0.1, roughness: 0.9,
+        side: THREE.DoubleSide, envMapIntensity: 0.5 }));
     t.position.y = 19;
-    const basin = new THREE.Mesh(new THREE.CylinderGeometry(14, 14, 2, 16), mat(COL.water));
+    t.castShadow = true;
+    const waist = new THREE.Mesh(new THREE.CylinderGeometry(9, 11, 14, 28, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0xc4d2da, metalness: 0.1, roughness: 0.9,
+        side: THREE.DoubleSide, envMapIntensity: 0.5 }));
+    waist.position.y = 40;
+    const basin = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, 2, 28), waterMat(0x2f6f86));
     basin.position.y = 1;
-    g.add(t, basin);
-    const tl = label('Cooling tower', 'Induced draft');
-    tl.position.set(0, 44, 0);
+    waters.push(basin);
+    g.add(t, waist, basin);
+    const tl = label('Cooling tower', 'Natural draft');
+    tl.position.set(0, 52, 0);
     g.add(tl);
     add(g, x, 0, z);
+    towerTops.push(new THREE.Vector3(x, 48, z));
   };
   tower(240, 175);
   tower(310, 175);
@@ -276,8 +358,9 @@ export function buildPlant() {
   add(box(22, 12, 14, COL.concrete, 'c-esp', 'z-env', 'ESP', 'Multi-field · >99.9%'), -25, 6, -145);
   add(box(14, 22, 14, 0xa8dcc0, 'c-fgd', 'z-env', 'FGD Absorber', 'Wet limestone'), 45, 11, -160);
 
-  const stack = cyl(4, 7, 55, 12, COL.concrete, 'c-stack', 'z-env', 'Stack', '500 MW · CEMS');
+  const stack = bandedStack(4, 7, 55, 5, 'c-stack', 'z-env', 'Stack', '275 m RCC · CEMS');
   add(stack, 115, 0, -210);
+  stackTop = new THREE.Vector3(115, 57, -210);
 
   add(box(40, 3, 6, 0x9098a0, 'c-flue', 'z-env', 'Flue gas duct', 'Boiler→ESP→FGD→Stack'), 35, 18, -100);
 
@@ -366,7 +449,8 @@ export function buildPlant() {
 
   positions['c-furnace'] = furnace;
 
-  return { root, pickables, spinners, glows, furnace, positions };
+  return { root, pickables, spinners, glows, furnace, positions,
+    stackTop, towerTops, waters, pipeFlows: pipeFlows.slice() };
 }
 
 export function pipeLegend() {
