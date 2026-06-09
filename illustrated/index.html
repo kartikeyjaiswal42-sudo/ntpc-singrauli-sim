@@ -28,9 +28,21 @@
 
     <main class="stage">
       <div class="canvas-wrap">
-        <p class="canvas-hint">Click any equipment on the diagram · Controls tab has 17 operator inputs →</p>
-        <svg id="scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2800 980"
-             preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plant simulation"></svg>
+        <div class="view-switch" id="view-switch">
+          <button type="button" class="vbtn active" data-view="pfd">⛓ Process flow</button>
+          <button type="button" class="vbtn" data-view="dcs">🖥 Control room (DCS)</button>
+          <button type="button" class="vbtn" data-view="cutaway">🏭 Cutaway</button>
+          <span class="view-hint" id="view-hint">Click any system to see how it works · Controls tab → 17 operator inputs</span>
+        </div>
+        <div class="view" id="view-pfd">
+          <svg id="pfd" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 1020"
+               preserveAspectRatio="xMidYMid meet" role="img" aria-label="Process flow diagram"></svg>
+        </div>
+        <div class="view hidden" id="view-dcs"></div>
+        <div class="view hidden" id="view-cutaway">
+          <svg id="scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2800 980"
+               preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plant cutaway"></svg>
+        </div>
       </div>
 
       <aside class="side">

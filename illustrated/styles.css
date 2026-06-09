@@ -282,3 +282,70 @@ body.paused .cloud, body.tripped .cloud { animation-play-state: paused; }
 /* poster depth: soft drop-shadow on equipment + zone panels */
 #scene .comp { filter: drop-shadow(0 4px 4px rgba(18,28,42,0.22)); }
 #scene .zone > rect { filter: drop-shadow(0 6px 8px rgba(18,28,42,0.14)); }
+
+/* ════════ View switcher (Flow / DCS / Cutaway) ════════ */
+.view-switch { display:flex; align-items:center; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+.vbtn { font:600 12.5px var(--sans); padding:7px 14px; border:1px solid var(--line); background:#fff;
+        color:var(--muted); border-radius:8px; cursor:pointer; transition:.15s; }
+.vbtn:hover { border-color:#9fb0c2; color:var(--ink); }
+.vbtn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+.view-hint { font-size:11px; color:var(--muted); margin-left:auto; }
+.view { width:100%; }
+.view.hidden { display:none; }
+
+/* ════════ Process Flow Diagram ════════ */
+#pfd { width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:12px; background:#f7f9fc; }
+.pfd-band { font:700 13px var(--sans); fill:#9aa6b2; letter-spacing:.09em; }
+.pfd-node { cursor:pointer; }
+.pfd-box { fill:#fff; stroke:#9fb0c2; stroke-width:1.6; filter:drop-shadow(0 3px 5px rgba(20,30,45,0.10)); transition:stroke .15s; }
+.pfd-box.furnace { fill:#1b1205; stroke:#a8551e; }
+.pfd-node:hover .pfd-box { stroke:#1ba3c4; stroke-width:2.2; }
+.pfd-node.selected .pfd-box { stroke:#c62828; stroke-width:2.8; }
+.pfd-t { font:700 15px var(--sans); fill:#1a2332; pointer-events:none; }
+.pfd-v { font:600 13px var(--mono, ui-monospace); fill:#0e7aa0; pointer-events:none; }
+#c-furnace .pfd-t { fill:#ffe1b0; } #c-furnace .pfd-v { fill:#ffce8a; }
+.pfd-glow { animation:pfdFlicker 2.4s ease-in-out infinite; pointer-events:none; }
+@keyframes pfdFlicker { 50% { opacity:.7; } }
+.pfd-l { font:600 11px var(--sans); fill:#566; paint-order:stroke; stroke:#f7f9fc; stroke-width:3.5px; stroke-linejoin:round; pointer-events:none; }
+.pfd-line { fill:none; opacity:.45; stroke-linejoin:round; }
+.pfd-dash { fill:none; stroke-dasharray:2 13; stroke-linecap:round; opacity:.95; stroke-linejoin:round; }
+.pfd-flow { animation:pfdDash calc(2.4s / var(--pfd-flow, 0.4)) linear infinite; }
+@keyframes pfdDash { to { stroke-dashoffset:-15; } }
+#pfd.off .pfd-flow { animation-play-state:paused; opacity:.2; }
+body.paused #pfd .pfd-flow, body.tripped #pfd .pfd-flow { animation-play-state:paused; }
+
+/* ════════ DCS / control-room mimic ════════ */
+#view-dcs { background:#0c131c; border:1px solid #1c2836; border-radius:12px; padding:16px; color:#dbe6f0; }
+.dcs-top { display:flex; align-items:center; gap:18px; border-bottom:1px solid #1e2b38; padding-bottom:12px; }
+.dcs-unit { font:700 15px var(--sans); }
+.dcs-unit small { display:block; color:#6f8095; font-weight:500; font-size:11px; margin-top:2px; }
+.dcs-hero { margin-left:auto; text-align:right; }
+.dcs-hero b { font:800 32px var(--mono, ui-monospace); color:#3ad29f; }
+.dcs-hero i { color:#6f8095; font-style:normal; font-size:12px; margin-left:6px; }
+.dcs-clock { font:600 14px var(--mono, ui-monospace); color:#7f93a8; min-width:84px; text-align:right; }
+.dcs-alarms { display:flex; flex-wrap:wrap; gap:6px; margin:12px 0; }
+.dcs-alm { font:600 11.5px var(--sans); padding:5px 11px; border-radius:6px; }
+.dcs-alm.crit { background:#3a0e12; color:#ff9a9a; border:1px solid #6e1b22; animation:almBlink 1s steps(2,jump-none) infinite; }
+.dcs-alm.warn { background:#3a2c0e; color:#ffce6b; border:1px solid #6e551b; }
+.dcs-alm.info { background:#102536; color:#7fd0ff; border:1px solid #1b4a6e; }
+.dcs-alm.ok   { background:#0f2a1e; color:#5ce6a8; border:1px solid #1b5e43; }
+@keyframes almBlink { 50% { opacity:.45; } }
+.dcs-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:10px; }
+.dcs-card { background:#111b26; border:1px solid #1e2b38; border-radius:9px; padding:11px 13px; }
+.dcs-card h4 { font:700 11px var(--sans); letter-spacing:.09em; color:#6f8095; margin-bottom:9px; }
+.dcs-tags { display:flex; flex-direction:column; gap:4px; }
+.dcs-tag { display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:3px 0; border-bottom:1px dashed #1a2734; }
+.dcs-l { font-size:12px; color:#9fb0c2; }
+.dcs-val b { font:600 14px var(--mono, ui-monospace); color:#e7eef5; }
+.dcs-val i { font-style:normal; color:#6f8095; font-size:10px; margin-left:4px; }
+.dcs-tag.hero .dcs-val b { color:#3ad29f; font-size:18px; }
+.dcs-tag.over .dcs-val b { color:#ff9a9a; }
+.dcs-foot { display:flex; gap:14px; margin-top:13px; flex-wrap:wrap; align-items:stretch; }
+.dcs-trend-wrap { background:#111b26; border:1px solid #1e2b38; border-radius:9px; padding:9px 11px; }
+.dcs-trend-lbl { display:block; font:600 10px var(--sans); color:#6f8095; margin-bottom:4px; letter-spacing:.06em; }
+#dcs-trend { display:block; }
+.dcs-status { display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start; flex:1; }
+.dcs-ind { font:600 11px var(--sans); color:#6f8095; background:#111b26; border:1px solid #1e2b38;
+           border-radius:6px; padding:6px 10px; display:flex; align-items:center; gap:6px; height:fit-content; }
+.dcs-ind i { width:8px; height:8px; border-radius:50%; background:#44525f; }
+.dcs-ind.on { color:#cfe0ee; } .dcs-ind.on i { background:#3ad29f; box-shadow:0 0 7px #3ad29f; }

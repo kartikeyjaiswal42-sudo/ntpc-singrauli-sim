@@ -1,5 +1,7 @@
 import { runPlant, SCENARIOS } from '../2d/engine.js';
 import { buildScene, LEGEND, VIEWBOX } from './scene.js';
+import { buildPFD, updatePFD } from './pfd.js';
+import { buildDCS, updateDCS } from './dcs.js';
 import { EQUIPMENT, EQUIPMENT_GROUPS } from './components.js';
 
 if (location.protocol === 'file:') {
@@ -37,6 +39,18 @@ let lastResult = null;
 
 $('scene').setAttribute('viewBox', VIEWBOX);
 $('scene').innerHTML = buildScene();
+$('pfd').innerHTML = buildPFD();
+$('view-dcs').innerHTML = buildDCS();
+
+let activeView = 'pfd';
+document.querySelectorAll('.vbtn').forEach((b) => {
+  b.onclick = () => {
+    activeView = b.dataset.view;
+    document.querySelectorAll('.vbtn').forEach((x) => x.classList.toggle('active', x === b));
+    ['pfd', 'dcs', 'cutaway'].forEach((v) => $(`view-${v}`).classList.toggle('hidden', v !== activeView));
+    paint();
+  };
+});
 
 $('legend').innerHTML = LEGEND.map((l) =>
   `<span class="li"><i style="background:${l.c}"></i>${l.t}</span>`).join('');
@@ -271,6 +285,9 @@ function paint() {
   document.querySelectorAll('#c-mill .mill-unit').forEach((g, i) => {
     g.style.opacity = i < state.millsInService ? 1 : 0.22;
   });
+
+  if (activeView === 'pfd') updatePFD(r, state);
+  else if (activeView === 'dcs') updateDCS(r, state);
 
   if (state.focusComp) renderDetail(state.focusComp);
 }
