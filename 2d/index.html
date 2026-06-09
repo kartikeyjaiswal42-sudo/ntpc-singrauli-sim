@@ -40,13 +40,22 @@
             <h2>Live equipment view</h2>
             <span class="panel-note" id="photo-meta">387 site photos</span>
             <span class="panel-note" id="cam-caption">Live site feed</span>
+            <button type="button" class="idx-btn" id="btn-index" title="Search every identified component">🔍 Component index</button>
           </div>
           <div class="viewport" id="viewport">
             <img class="vp-photo" id="vp-photo" alt="" decoding="async"/>
+            <video class="vp-video hidden" id="vp-video" autoplay loop muted playsinline></video>
             <div class="vp-grade"></div>
             <div class="vp-layer" id="vp-layer">
               <canvas class="vp-fx" id="vp-fx"></canvas>
+              <svg class="vp-svg-overlay" id="vp-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
               <div class="vp-chips" id="vp-chips"></div>
+              <div class="vp-hotspots" id="vp-hotspots"></div>
+              <div class="hot-pop hidden" id="hot-pop">
+                <button type="button" class="hot-pop-x" id="hot-pop-x">&times;</button>
+                <strong id="hot-pop-label"></strong>
+                <p id="hot-pop-detail"></p>
+              </div>
             </div>
             <div class="vp-hud">
               <span class="vp-rec"><i></i>LIVE</span>
@@ -56,6 +65,39 @@
             <div class="vp-title">
               <strong id="vp-label">Full Plant</strong>
               <span id="vp-sub">Stage-2</span>
+              <span class="vp-hot-hint hidden" id="vp-hot-hint">⊕ <b id="vp-hot-n">0</b> labels — tap them</span>
+              <button type="button" class="vp-info-btn" id="vp-info-btn">💡 Learn details</button>
+            </div>
+            
+            <!-- Component Detail Explorer Panel -->
+            <div id="comp-explorer" class="comp-explorer hidden">
+              <div class="ce-header">
+                <div class="ce-zone-tag" id="ce-zone-tag">ZONE</div>
+                <h3 id="ce-title">Component Name</h3>
+                <button type="button" class="ce-close" id="ce-close" title="Close Panel">&times;</button>
+              </div>
+              <div class="ce-scroll">
+                <div class="ce-row">
+                  <div class="ce-section-title">🔧 WHAT IS THIS?</div>
+                  <div class="ce-section-body" id="ce-what-is">Description of the component...</div>
+                </div>
+                <div class="ce-row">
+                  <div class="ce-section-title">⚡ WHAT DOES IT DO?</div>
+                  <div class="ce-section-body" id="ce-what-does">Thermodynamic role...</div>
+                </div>
+                <div class="ce-row">
+                  <div class="ce-section-title">📊 ENGINEERING INSIGHTS</div>
+                  <div class="ce-section-body" id="ce-insights">Detailed equations and calculations...</div>
+                </div>
+                <div class="ce-row" id="ce-live-row">
+                  <div class="ce-section-title">⚙️ LIVE SIMULATOR INTEGRATION</div>
+                  <div class="ce-section-body">
+                    <div class="ce-live-grid" id="ce-live-grid">
+                      <!-- Live variables injected dynamically -->
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="cam-strip" id="cam-strip"></div>
@@ -126,6 +168,18 @@
       </div>
     </footer>
 
+    <!-- Component index / search -->
+    <div class="index-modal hidden" id="index-modal">
+      <div class="idx-card">
+        <div class="idx-head">
+          <h3>Component index — every identified part of the plant</h3>
+          <button type="button" class="idx-x" id="idx-x">&times;</button>
+        </div>
+        <input type="search" id="idx-search" class="idx-search" placeholder="Search: turbine, ESP, mill, FGD, pump, chimney…" autocomplete="off"/>
+        <div class="idx-list" id="idx-list"></div>
+      </div>
+    </div>
+
     <!-- Tour toast -->
     <div class="tour-toast hidden" id="tour-toast">
       <span class="tour-num" id="tour-num"></span>
@@ -137,7 +191,7 @@
   <div id="boot-error" class="boot-error">
     <h2>Cannot start</h2>
     <p id="boot-error-msg"></p>
-    <p>Run <code>./start.sh</code> then open <strong>http://localhost:3000/2d/</strong></p>
+    <p>Run <code>./start.sh</code> then open <strong>http://localhost:3005/2d/</strong></p>
   </div>
 
   <script type="module">

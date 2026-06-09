@@ -1,0 +1,62 @@
+{
+  "_note": "Zone assignments from visual site-walk analysis (Jun 2026). Each range is inclusive by filename sort order.",
+  "ranges": [
+    {"start": "IMG_20260529_123605.jpg", "end": "IMG_20260529_123614.jpg", "zone": "coal", "component": "Coal bunker bay & boiler house approach"},
+    {"start": "IMG_20260530_111940.jpg", "end": "IMG_20260530_111941.jpg", "zone": "control", "component": "Boiler basics reference (200 MW vs 500 MW diagram)"},
+    {"start": "IMG_20260530_131105.jpg", "end": "IMG_20260530_131107.jpg", "zone": "overview", "component": "Main entrance gate & plant skyline"},
+
+    {"start": "IMG_20260601_101033.jpg", "end": "IMG_20260601_101039.jpg", "zone": "boiler", "component": "Boiler house exterior & pipe rack"},
+    {"start": "IMG_20260601_101312.jpg", "end": "IMG_20260601_101317.jpg", "zone": "dm_water", "component": "Stage-II DMTP control room"},
+    {"start": "IMG_20260601_102125.jpg", "end": "IMG_20260601_102143.jpg", "zone": "boiler", "component": "Induced Draft (ID) fan & flue gas duct"},
+    {"start": "IMG_20260601_102648.jpg", "end": "IMG_20260601_103113.jpg", "zone": "coal", "component": "Coal stockyard, stacker-reclaimer & conveyors"},
+    {"start": "IMG_20260601_103414.jpg", "end": "IMG_20260601_104406.jpg", "zone": "control", "component": "FGD DCS screens (wet ball mill, gypsum bleed)"},
+    {"start": "IMG_20260601_104421.jpg", "end": "IMG_20260601_104844.jpg", "zone": "chimney_fgd", "component": "Chimney, ESP ducting & DM storage tank overview"},
+    {"start": "IMG_20260601_105101.jpg", "end": "IMG_20260601_105102.jpg", "zone": "electrical", "component": "FGD limestone handling MCC (415 V)"},
+    {"start": "IMG_20260601_105111.jpg", "end": "IMG_20260601_105846.jpg", "zone": "control", "component": "Field instruments & ILMS switchgear"},
+    {"start": "IMG_20260601_110514.jpg", "end": "IMG_20260601_112827.jpg", "zone": "chimney_fgd", "component": "FGD absorber tower & gypsum vacuum belt filter"},
+    {"start": "IMG_20260601_113006.jpg", "end": "IMG_20260601_113538.jpg", "zone": "coal", "component": "Coal conveyor gallery (CHP)"},
+    {"start": "IMG_20260601_191803.jpg", "end": "IMG_20260601_191809.jpg", "zone": "control", "component": "FGD process notes (handwritten)"},
+
+    {"start": "IMG_20260602_102410.jpg", "end": "IMG_20260602_102410.jpg", "zone": "control", "component": "Boiler draught & mill notes (PA/FD/ID/APH)"},
+    {"start": "IMG_20260602_110909.jpg", "end": "IMG_20260602_112129.jpg", "zone": "coal", "component": "Coal pulverizer (mill) bay & PF piping"},
+    {"start": "IMG_20260602_112129.jpg", "end": "IMG_20260602_113426.jpg", "zone": "coal", "component": "XRP/BBD bowl mills & raw coal feeders"},
+    {"start": "IMG_20260602_113427.jpg", "end": "IMG_20260602_115508.jpg", "zone": "chimney_fgd", "component": "Chimney base, ESP hoppers & cable galleries"},
+    {"start": "IMG_20260602_115509.jpg", "end": "IMG_20260602_115549.jpg", "zone": "electrical", "component": "400 kV switchyard & transmission lines"},
+    {"start": "IMG_20260602_120113.jpg", "end": "IMG_20260602_121326.jpg", "zone": "boiler", "component": "Boiler house walkways & furnace area"},
+    {"start": "IMG_20260602_121327.jpg", "end": "IMG_20260602_122406.jpg", "zone": "coal", "component": "Coal bunkers & tripper floor"},
+    {"start": "IMG_20260602_122407.jpg", "end": "IMG_20260602_123155.jpg", "zone": "turbine", "component": "Turbine hall (insulated HP/IP) & instrument air receiver"},
+
+    {"start": "IMG_20260604_110029.jpg", "end": "IMG_20260604_115018.jpg", "zone": "auxiliary", "component": "Workshop & stores (valves, turbine spares, motor overhaul)"},
+
+    {"start": "IMG_20260605_115416.jpg", "end": "IMG_20260605_115629.jpg", "zone": "chimney_fgd", "component": "ESP Pass-A & flue gas ducting"},
+    {"start": "IMG_20260605_120617.jpg", "end": "IMG_20260605_121215.jpg", "zone": "feedwater", "component": "Condensate extraction pumps (CEP) & green CW piping"},
+    {"start": "IMG_20260605_122301.jpg", "end": "IMG_20260605_122301.jpg", "zone": "condenser", "component": "Surface condenser notes (two-pass, hotwell, TTD)"},
+
+    {"start": "IMG_20260606_102201.jpg", "end": "IMG_20260606_102812.jpg", "zone": "auxiliary", "component": "Instrument/service air compressors"},
+    {"start": "IMG_20260606_110716.jpg", "end": "IMG_20260606_110716.jpg", "zone": "auxiliary", "component": "Radiation source storage (level gauges)"},
+    {"start": "IMG_20260606_110717.jpg", "end": "IMG_20260606_114238.jpg", "zone": "pumphouse", "component": "CW intake forebay, travelling screens & gantry crane"},
+    {"start": "IMG_20260606_120008.jpg", "end": "IMG_20260606_121407.jpg", "zone": "chlorination", "component": "Chlorinator units & CW chemical dosing"}
+  ],
+  "overrides": {
+    "IMG_20260606_110717.jpg": {
+      "zone": "auxiliary",
+      "component": "Radiation source storage (level gauges)"
+    },
+    "video_20260601_113027.mp4": {
+      "zone": "coal",
+      "component": "Coal conveyor gallery (CHP)"
+    },
+    "video_20260601_113037.mp4": {
+      "zone": "coal",
+      "component": "Coal conveyor gallery (CHP)"
+    },
+    "video_20260601_113041.mp4": {
+      "zone": "coal",
+      "component": "Coal conveyor gallery (CHP)"
+    },
+    "video_20260606_102502.mp4": {
+      "zone": "auxiliary",
+      "component": "Instrument/service air compressors"
+    }
+  }
+}

@@ -4,12 +4,14 @@ import { EffectsLayer } from './effects.js';
 import { EnergyBar, EffCurve, Trend } from './charts.js';
 import manifest from './manifest.json' with { type: 'json' };
 
-const PHOTO_BASE = '/photos/';
+const PHOTO_BASE = '../photos/';
 const photoUrl = (file) => `${PHOTO_BASE}${encodeURIComponent(file)}`;
 const zonePhotos = (zone) => manifest.photos[zone] || [];
+const catalogByFile = Object.fromEntries((manifest.catalog || []).map((p) => [p.file, p]));
+const photoMeta = (file) => catalogByFile[file] || {};
 
 if (location.protocol === 'file:') {
-  throw new Error('Open via http://localhost:3000/2d/ — run ./start.sh first');
+  throw new Error('Open via local web server — run ./start.sh first');
 }
 
 /* ── State ───────────────────────────────────────────── */
@@ -38,8 +40,11 @@ const scenarioRow = $('scenario-row');
 
 const viewport = $('viewport');
 const photo = $('vp-photo');
+const video = $('vp-video');
 const layer = $('vp-layer');
 const chipsEl = $('vp-chips');
+const hotspotsEl = $('vp-hotspots');
+const hotPop = $('hot-pop');
 const fx = new EffectsLayer($('vp-fx'));
 
 const energyChart = new EnergyBar($('energy-canvas'));
@@ -170,7 +175,7 @@ function renderCamStrip() {
   $('cam-strip').querySelectorAll('.cam-btn').forEach((b) => {
     b.onclick = () => selectCamera(b.dataset.cam);
   });
-  $('photo-meta').textContent = `${manifest.total} site photos · 14 plant zones`;
+  $('photo-meta').textContent = `${manifest.totalPhotos ?? manifest.total} photos · ${manifest.totalVideos ?? 0} videos · ${manifest.zoneCount ?? 14} zones`;
 }
 
 function renderPhotoStrip(scene) {
@@ -182,10 +187,12 @@ function renderPhotoStrip(scene) {
     ? `${(idx >= 0 ? idx : 0) + 1} / ${photos.length}`
     : '0 photos';
 
-  $('photo-strip').innerHTML = photos.map((p) =>
-    `<button type="button" class="photo-thumb${p.file === state.photoFile ? ' active' : ''}" data-file="${p.file}" title="${p.file}">
+  $('photo-strip').innerHTML = photos.map((p) => {
+    const comp = p.component || photoMeta(p.file).component || '';
+    return `<button type="button" class="photo-thumb${p.file === state.photoFile ? ' active' : ''}" data-file="${p.file}" title="${comp ? comp + ' · ' : ''}${p.file}">
        <img src="${photoUrl(p.file)}" alt="" loading="lazy" decoding="async"/>
-     </button>`).join('');
+     </button>`;
+  }).join('');
 
   $('photo-strip').querySelectorAll('.photo-thumb').forEach((b) => {
     b.onclick = () => selectPhoto(b.dataset.file);
@@ -198,11 +205,184 @@ function renderPhotoStrip(scene) {
 function selectPhoto(file) {
   if (!file || state.photoFile === file) return;
   state.photoFile = file;
-  photo.classList.remove('ready');
-  photo.onload = () => { photo.classList.add('ready'); layoutLayer(); };
-  photo.src = photoUrl(file);
-  if (photo.complete && photo.naturalWidth) { photo.classList.add('ready'); layoutLayer(); }
+  
+  const isVideo = file.toLowerCase().endsWith('.mp4');
+  
+  if (isVideo) {
+    photo.classList.add('hidden');
+    video.classList.remove('hidden');
+    video.classList.remove('ready');
+    video.src = photoUrl(file);
+    video.onloadedmetadata = () => {
+      video.classList.add('ready');
+      layoutLayer();
+    };
+  } else {
+    video.classList.add('hidden');
+    photo.classList.remove('hidden');
+    photo.classList.remove('ready');
+    photo.onload = () => {
+      photo.classList.add('ready');
+      layoutLayer();
+    };
+    photo.src = photoUrl(file);
+    if (photo.complete && photo.naturalWidth) {
+      photo.classList.add('ready');
+      layoutLayer();
+    }
+  }
+  
   renderPhotoStrip(sceneById(state.cam));
+  renderHotspots(file);
+
+  if (!$('comp-explorer').classList.contains('hidden')) {
+    updateExplorerUI(file);
+  }
+}
+
+/* ── Hotspot overlays (clickable labelled callouts) ──── */
+function hideHotPop() {
+  hotPop.classList.add('hidden');
+  hotspotsEl.querySelectorAll('.hotspot.active').forEach((m) => m.classList.remove('active'));
+}
+
+function showHotPop(marker, h) {
+  hotspotsEl.querySelectorAll('.hotspot.active').forEach((m) => m.classList.remove('active'));
+  marker.classList.add('active');
+  $('hot-pop-label').textContent = h.label;
+  $('hot-pop-detail').textContent = h.detail;
+  // place the popover near the marker, kept inside the frame
+  const lx = parseFloat(marker.style.left);
+  const ly = parseFloat(marker.style.top);
+  hotPop.style.left = `${Math.min(Math.max(lx, 22), 78)}%`;
+  hotPop.style.top = `${ly > 55 ? ly - 4 : ly + 6}%`;
+  hotPop.style.transform = `translate(-50%, ${ly > 55 ? '-100%' : '0'})`;
+  hotPop.classList.remove('hidden');
+}
+
+function renderHotspots(file) {
+  hideHotPop();
+  const spots = (file ? photoMeta(file).hotspots : null) || [];
+  hotspotsEl.innerHTML = spots.map((h, i) => `
+    <button type="button" class="hotspot" data-i="${i}"
+            style="left:${h.x * 100}%; top:${h.y * 100}%">
+      <span class="hs-dot">${i + 1}</span>
+      <span class="hs-tag">${h.label}</span>
+    </button>`).join('');
+  hotspotsEl.querySelectorAll('.hotspot').forEach((m) => {
+    m.onclick = (e) => {
+      e.stopPropagation();
+      const h = spots[+m.dataset.i];
+      if (m.classList.contains('active')) hideHotPop();
+      else showHotPop(m, h);
+    };
+  });
+  const hint = $('vp-hot-hint');
+  if (spots.length) {
+    $('vp-hot-n').textContent = spots.length;
+    hint.classList.remove('hidden');
+  } else {
+    hint.classList.add('hidden');
+  }
+}
+
+/* ── Component Detail Explorer Logic ─────────────────── */
+function getLiveValue(key, result) {
+  if (!result) return '—';
+  if (key === 'gcv') return fmt(result.inputs?.gcv || 3600, 0) + ' kcal/kg';
+  if (key === 'sulphur') return ((result.inputs?.sulphur || 0.42) * 100).toFixed(2) + ' %';
+  if (key === 'furnaceTemp') {
+    const temp = result.grossMW > 2 ? Math.round(1010 + 460 * result.inputs?.loadFrac) : null;
+    return temp ? temp + ' °C' : 'offline';
+  }
+  if (key === 'ashTh') return (result.coalTh * 0.38).toFixed(1) + ' t/h';
+  if (key === 'espDp') return (result.grossMW > 2 ? (15 + 10 * (result.inputs?.loadFrac || 0)).toFixed(0) : '0') + ' mm WC';
+  
+  const val = result[key];
+  if (val === undefined) return '—';
+  
+  if (key === 'netMW' || key === 'grossMW' || key === 'mechMW') return fmt(val, 1) + ' MW';
+  if (key === 'freq') return val.toFixed(2) + ' Hz';
+  if (key === 'rpm') return fmt(val, 0) + ' rpm';
+  if (key === 'steamTh' || key === 'coalTh' || key === 'co2Th' || key === 'gypsumTh') return fmt(val, 0) + ' t/h';
+  if (key === 'cwM3h') return fmt(val, 0) + ' m³/h';
+  if (key === 'cwDeltaT') return val.toFixed(1) + ' °C';
+  if (key === 'cwInlet' || key === 'cwOutlet' || key === 'msT' || key === 'flueT') return Math.round(val) + ' °C';
+  if (key === 'condDuty') return fmt(val / 1e6, 1) + 'M kcal/h';
+  if (key === 'vacuumKgcm2g') return val.toFixed(3) + ' kg/cm²';
+  if (key === 'msP') return val.toFixed(1) + ' kg/cm²';
+  if (key === 'so2OutMg' || key === 'so2RawMg' || key === 'pmOutMg') return Math.round(val) + ' mg/Nm³';
+  if (key === 'cycleEff' || key === 'boilerEff' || key === 'effNet') return (val * 100).toFixed(2) + ' %';
+  if (key === 'auxMW') return val.toFixed(1) + ' MW';
+  if (key === 'airKgh') return fmt(val / 1000, 0) + ' t/h';
+  
+  return val;
+}
+
+function updateExplorerUI(file) {
+  const meta = photoMeta(file);
+  const zone = sceneById(state.cam).zone;
+  const zoneTitle = manifest.zones[zone]?.title || 'Singrauli';
+  
+  $('ce-zone-tag').textContent = zoneTitle;
+  $('ce-title').textContent = meta.component || 'Plant Component';
+  $('ce-what-is').textContent = meta.what_is_this || 'No description available.';
+  $('ce-what-does').textContent = meta.what_it_does || 'No operational data available.';
+  $('ce-insights').textContent = meta.engineering_insight || 'No design parameters documented.';
+  
+  const liveGrid = $('ce-live-grid');
+  const liveRow = $('ce-live-row');
+  const vars = meta.live_variables || {};
+  
+  if (Object.keys(vars).length === 0) {
+    liveRow.classList.add('hidden');
+    liveGrid.innerHTML = '';
+  } else {
+    liveRow.classList.remove('hidden');
+    liveGrid.innerHTML = Object.entries(vars).map(([label, key]) => `
+      <div class="ce-live-item">
+        <span class="ce-live-label">${label}</span>
+        <span class="ce-live-value" data-live-key="${key}">—</span>
+      </div>
+    `).join('');
+    updateExplorerLiveValues();
+  }
+}
+
+function updateExplorerLiveValues() {
+  if (!currentResult) return;
+  const grid = $('ce-live-grid');
+  grid.querySelectorAll('[data-live-key]').forEach((el) => {
+    const key = el.dataset.liveKey;
+    el.textContent = getLiveValue(key, currentResult);
+  });
+}
+
+function toggleExplorer() {
+  const c = $('comp-explorer');
+  const btn = $('vp-info-btn');
+  const isHidden = c.classList.toggle('hidden');
+  btn.classList.toggle('active', !isHidden);
+  if (!isHidden && state.photoFile) {
+    updateExplorerUI(state.photoFile);
+  }
+}
+
+function openExplorer() {
+  const c = $('comp-explorer');
+  const btn = $('vp-info-btn');
+  c.classList.remove('hidden');
+  btn.classList.add('active');
+  if (state.photoFile) {
+    updateExplorerUI(state.photoFile);
+  }
+}
+
+function closeExplorer() {
+  const c = $('comp-explorer');
+  const btn = $('vp-info-btn');
+  c.classList.add('hidden');
+  btn.classList.remove('active');
 }
 
 function buildChips(scene) {
@@ -223,7 +403,10 @@ function updateChips(scene, r) {
 
 function layoutLayer() {
   const box = viewport.getBoundingClientRect();
-  const iw = photo.naturalWidth, ih = photo.naturalHeight;
+  const isVideo = state.photoFile && state.photoFile.toLowerCase().endsWith('.mp4');
+  const iw = isVideo ? video.videoWidth : photo.naturalWidth;
+  const ih = isVideo ? video.videoHeight : photo.naturalHeight;
+  
   if (!iw || !ih || !box.width) return;
   const scale = Math.min(box.width / iw, box.height / ih);
   const w = iw * scale, h = ih * scale;
@@ -242,7 +425,10 @@ function selectCamera(id, photoIndex = 0) {
   $('vp-cam').textContent = `CAM ${scene.cam}`;
   $('vp-label').textContent = scene.label;
   $('vp-sub').textContent = scene.sub;
-  $('cam-caption').textContent = scene.caption;
+  const meta = state.photoFile ? photoMeta(state.photoFile) : {};
+  $('cam-caption').textContent = meta.component
+    ? `${meta.component} · ${scene.caption}`
+    : scene.caption;
   $('ledger-focus').textContent = scene.section ? scene.label : 'Full plant';
 
   const photos = zonePhotos(scene.zone);
@@ -251,18 +437,101 @@ function selectCamera(id, photoIndex = 0) {
   state.photoFile = file || null;
 
   if (file) {
-    photo.classList.remove('ready');
-    photo.onload = () => { photo.classList.add('ready'); layoutLayer(); };
-    photo.src = photoUrl(file);
-    if (photo.complete && photo.naturalWidth) { photo.classList.add('ready'); layoutLayer(); }
+    const isVideo = file.toLowerCase().endsWith('.mp4');
+    if (isVideo) {
+      photo.classList.add('hidden');
+      video.classList.remove('hidden');
+      video.classList.remove('ready');
+      video.src = photoUrl(file);
+      video.onloadedmetadata = () => {
+        video.classList.add('ready');
+        layoutLayer();
+      };
+    } else {
+      video.classList.add('hidden');
+      photo.classList.remove('hidden');
+      photo.classList.remove('ready');
+      photo.onload = () => {
+        photo.classList.add('ready');
+        layoutLayer();
+      };
+      photo.src = photoUrl(file);
+      if (photo.complete && photo.naturalWidth) {
+        photo.classList.add('ready');
+        layoutLayer();
+      }
+    }
+    
+    if (!$('comp-explorer').classList.contains('hidden')) {
+      updateExplorerUI(file);
+    }
   }
 
   buildChips(scene);
   fx.setScene(scene.effects);
   renderPhotoStrip(scene);
+  renderHotspots(state.photoFile);
   if (currentResult) { updateChips(scene, currentResult); renderLedger(currentResult); }
   scrollLedgerToFocus();
 }
+
+/* ── Component index / search ─────────────────────────── */
+const ZONE_ORDER = ['overview', 'coal', 'boiler', 'chimney_fgd', 'turbine', 'condenser',
+  'feedwater', 'pumphouse', 'chlorination', 'dm_water', 'electrical', 'control', 'auxiliary', 'unclassified'];
+
+function buildIndexData() {
+  // one entry per distinct component, pointing at its first photo
+  const seen = new Set();
+  const entries = [];
+  (manifest.catalog || []).forEach((c) => {
+    const key = c.zone + '|' + c.component;
+    if (seen.has(key)) return;
+    seen.add(key);
+    const n = (manifest.photos[c.zone] || []).filter((p) => p.component === c.component).length;
+    entries.push({ zone: c.zone, component: c.component, file: c.file, what: c.what_is_this || '', n });
+  });
+  return entries;
+}
+const INDEX = buildIndexData();
+
+function renderIndex(query = '') {
+  const q = query.trim().toLowerCase();
+  const hits = INDEX.filter((e) =>
+    !q || e.component.toLowerCase().includes(q) || e.what.toLowerCase().includes(q) ||
+    (manifest.zones[e.zone]?.title || '').toLowerCase().includes(q));
+  const byZone = {};
+  hits.forEach((e) => { (byZone[e.zone] ||= []).push(e); });
+  const html = ZONE_ORDER.filter((z) => byZone[z]).map((z) => `
+    <div class="idx-zone">
+      <div class="idx-zone-h">${manifest.zones[z]?.title || z}<span>${byZone[z].length}</span></div>
+      ${byZone[z].map((e) => `
+        <button type="button" class="idx-item" data-file="${e.file}" data-zone="${e.zone}">
+          <img src="${photoUrl(e.file)}" alt="" loading="lazy"/>
+          <span class="idx-item-txt"><b>${e.component}</b><small>${e.what.slice(0, 96)}${e.what.length > 96 ? '…' : ''}</small></span>
+          <span class="idx-item-n">${e.n}📷</span>
+        </button>`).join('')}
+    </div>`).join('');
+  $('idx-list').innerHTML = html || `<div class="idx-empty">No component matches “${query}”.</div>`;
+  $('idx-list').querySelectorAll('.idx-item').forEach((b) => {
+    b.onclick = () => jumpToPhoto(b.dataset.file, b.dataset.zone);
+  });
+}
+
+function jumpToPhoto(file, zone) {
+  closeIndex();
+  // scene id matches zone id for all camera zones
+  if (sceneById(zone).id === zone) selectCamera(zone);
+  selectPhoto(file);
+  openExplorer();
+}
+
+function openIndex() {
+  $('index-modal').classList.remove('hidden');
+  $('idx-search').value = '';
+  renderIndex('');
+  setTimeout(() => $('idx-search').focus(), 30);
+}
+function closeIndex() { $('index-modal').classList.add('hidden'); }
 
 /* ── Compute + paint ─────────────────────────────────── */
 let currentResult = null;
@@ -282,6 +551,10 @@ function paint() {
   trend.push(r.netMW);
   trend.draw('#16a34a', DESIGN.ratedMW);
   $('trend-now').textContent = `${fmt(r.netMW, 0)} MW`;
+
+  if (!$('comp-explorer').classList.contains('hidden')) {
+    updateExplorerLiveValues();
+  }
 
   document.body.classList.toggle('running', state.running && !state.tripped);
   document.body.classList.toggle('paused', !state.running && !state.tripped);
@@ -391,6 +664,37 @@ $('tour-skip').onclick = stopTour;
 document.addEventListener('keydown', (e) => {
   if (e.key === 't' || e.key === 'T') $('btn-tour').click();
   if (e.key === 'Escape' && state.tourActive) stopTour();
+  if (e.key === 'Escape' && !$('comp-explorer').classList.contains('hidden')) closeExplorer();
+});
+
+$('ce-close').onclick = (e) => {
+  e.stopPropagation();
+  closeExplorer();
+};
+$('vp-info-btn').onclick = (e) => {
+  e.stopPropagation();
+  toggleExplorer();
+};
+$('vp-photo').onclick = (e) => {
+  e.stopPropagation();
+  hideHotPop();
+  toggleExplorer();
+};
+$('vp-video').onclick = (e) => {
+  e.stopPropagation();
+  toggleExplorer();
+};
+
+/* ── Hotspot popover + component index events ────────── */
+$('hot-pop-x').onclick = (e) => { e.stopPropagation(); hideHotPop(); };
+$('hot-pop').onclick = (e) => e.stopPropagation();
+$('btn-index').onclick = (e) => { e.stopPropagation(); openIndex(); };
+$('idx-x').onclick = closeIndex;
+$('index-modal').onclick = (e) => { if (e.target.id === 'index-modal') closeIndex(); };
+$('idx-search').oninput = (e) => renderIndex(e.target.value);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { hideHotPop(); closeIndex(); }
+  if ((e.key === 'i' || e.key === 'I') && !/input|textarea|select/i.test(document.activeElement.tagName)) openIndex();
 });
 
 window.addEventListener('resize', () => { layoutLayer(); paint(); });
