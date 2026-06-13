@@ -4,7 +4,7 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { runPlant, SCENARIOS } from '../2d/engine.js';
 import { EQUIPMENT, EQUIPMENT_GROUPS } from '../illustrated/components.js';
 import { buildPlant, pipeLegend, ZONE_PADS } from './plant.js';
-import { setupSky, setupEnvironment, Plume } from './fx.js';
+import { setupSky, setupEnvironment, setupCloudField, Plume } from './fx.js';
 import { computeImpacts, CONTROL_HINTS } from '../shared/impacts.js';
 import { createProtection, stepProtection, resetProtection } from '../shared/protection.js';
 
@@ -19,7 +19,8 @@ const state = {
   excessAir: 1.20, burnerTilt: 0, millsInService: 3, cwPumpPct: 100,
   useTdbfp: true, bcpOn: true, fdFanOn: true, idFanOn: true,
   espOn: true, fgdOn: true, clO2On: true, running: true, tripped: false,
-  focusComp: null,
+  focusComp: null, focusZone: null, focusPath: 'generation',
+  labelsOn: false, flowOn: true, autoRotate: false, guideOn: false,
 };
 
 let rampTarget = null;
@@ -31,6 +32,76 @@ function fmt(x, d = 0) {
   if (!isFinite(x)) return '—';
   return Number(x).toLocaleString('en-IN', { minimumFractionDigits: d, maximumFractionDigits: d });
 }
+
+const PROCESS_PATHS = [
+  {
+    id: 'generation', name: 'Operation', color: '#ffb74d',
+    title: 'How power is generated',
+    note: 'Coal energy becomes steam energy, shaft power, and finally high-voltage electrical power.',
+    systems: ['coal', 'steam', 'power'],
+    steps: [
+      ['c-mgr', 'Coal arrives'], ['c-chp', 'Crush & convey'], ['c-mill', 'Pulverise'],
+      ['c-furnace', 'Burn coal'], ['c-sh', 'Make steam'], ['c-hp', 'HP turbine'],
+      ['c-rh', 'Reheat'], ['c-ip', 'IP / LP turbine'], ['c-gen', 'Generate'],
+      ['c-gt', 'Step up'], ['c-yard', 'Export to grid'],
+    ],
+  },
+  {
+    id: 'steamwater', name: 'Steam–water', color: '#ff5575',
+    title: 'Reheat Rankine steam–water cycle',
+    note: 'A closed working-fluid loop: condense, pump, regenerate, boil, expand, reheat, expand, and condense again.',
+    systems: ['steam', 'feedwater'],
+    steps: [
+      ['c-cond', 'Condenser'], ['c-cep', 'CEP'], ['c-lph', 'LP heaters'],
+      ['c-deaerator', 'Deaerator'], ['c-tdbfp', 'Boiler feed pump'], ['c-hph', 'HP heaters'],
+      ['c-eco', 'Economizer'], ['c-drum', 'Drum / waterwalls'], ['c-sh', 'Superheater'],
+      ['c-hp', 'HP turbine'], ['c-rh', 'Reheater'], ['c-ip', 'IP / LP turbine'], ['c-cond', 'Condense'],
+    ],
+  },
+  {
+    id: 'airflue', name: 'Air & flue gas', color: '#8bcf78',
+    title: 'Combustion-air and flue-gas path',
+    note: 'FD and PA fans supply air; the ID fan keeps the furnace under negative pressure after particulate removal.',
+    systems: ['coal', 'air', 'flue'],
+    steps: [
+      ['c-fd', 'FD fan'], ['c-aph', 'Air preheater'], ['c-furnace', 'Furnace'],
+      ['c-eco', 'Rear pass'], ['c-aph', 'APH heat recovery'], ['c-esp', 'ESP'],
+      ['c-idf', 'ID fan'], ['c-fgd', 'FGD / bypass'], ['c-stack', 'Stack'],
+    ],
+  },
+  {
+    id: 'cooling', name: 'Cooling water', color: '#42a5f5',
+    title: 'Singrauli once-through cooling-water path',
+    note: 'Stage-I/II draw Rihand water, pass it through condenser tubes once, and return warmer water through the discharge channel.',
+    systems: ['cooling'],
+    steps: [
+      ['c-outfall', 'Rihand intake'], ['c-cwp', 'CW pumps'], ['c-cond', 'Condenser'],
+      ['c-outfall', 'Hot-water discharge'],
+    ],
+  },
+  {
+    id: 'electrical', name: 'Electrical', color: '#ffd233',
+    title: 'Electrical generation and evacuation',
+    note: 'The generator makes 21 kV power; the GT raises it to 400 kV while the UAT supplies plant auxiliaries.',
+    systems: ['power'],
+    steps: [
+      ['c-gen', 'Generator'], ['c-ipb', '21 kV IPB'], ['c-uat', 'Auxiliary branch'],
+      ['c-gt', '21/400 kV GT'], ['c-yard', '400 kV switchyard'],
+    ],
+  },
+  {
+    id: 'ash', name: 'Ash', color: '#b5a58d',
+    title: 'Bottom-ash and fly-ash handling',
+    note: 'Bottom ash leaves below the furnace; fly ash is collected in ESP hoppers and pneumatically conveyed to silos.',
+    systems: ['ash'],
+    steps: [
+      ['c-furnace', 'Combustion ash'], ['c-bottom-ash', 'Bottom ash slurry'],
+      ['c-esp', 'ESP fly ash'], ['c-flyash', 'Fly-ash silos'], ['c-dyke', 'Offsite ash dyke'],
+    ],
+  },
+];
+
+const processPath = (id = state.focusPath) => PROCESS_PATHS.find((p) => p.id === id) || PROCESS_PATHS[0];
 
 function plantInputs() {
   return {
@@ -188,11 +259,14 @@ const canvas = $('viewport');
 const labelLayer = $('labels');
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.92;
+renderer.toneMappingExposure = 0.82;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const labelRenderer = new CSS2DRenderer({ element: labelLayer });
 labelRenderer.domElement.style.position = 'absolute';
@@ -200,42 +274,49 @@ labelRenderer.domElement.style.inset = '0';
 labelRenderer.domElement.style.pointerEvents = 'none';
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xcddbe6, 330, 780);
+scene.fog = new THREE.Fog(0xc7d6df, 760, 1650);
 
-const camera = new THREE.PerspectiveCamera(50, 1, 1, 20000);
-camera.position.set(280, 200, 320);
+const camera = new THREE.PerspectiveCamera(44, 1, 1, 20000);
+camera.position.set(315, 188, 355);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.dampingFactor = 0.055;
 controls.maxPolarAngle = Math.PI / 2.1;
-controls.target.set(10, 15, 10);
+controls.minDistance = 28;
+controls.maxDistance = 720;
+controls.zoomToCursor = true;
+controls.target.set(15, 18, -12);
 
 // sun direction shared by the sky shader and the shadow-casting light
 // (polar 50° = 40° elevation; azimuth 205° = side/back light, sun out of the default view)
 const sunDir = new THREE.Vector3().setFromSphericalCoords(
-  1, THREE.MathUtils.degToRad(50), THREE.MathUtils.degToRad(205));
+  1, THREE.MathUtils.degToRad(46), THREE.MathUtils.degToRad(132));
 
-const hemi = new THREE.HemisphereLight(0xbcd6f2, 0x5d564a, 0.55);
+const hemi = new THREE.HemisphereLight(0xc9def0, 0x4d5142, 0.62);
 scene.add(hemi);
-scene.add(new THREE.AmbientLight(0xffffff, 0.12));
-const sun = new THREE.DirectionalLight(0xfff3e0, 2.1);
+scene.add(new THREE.AmbientLight(0xffffff, 0.08));
+const sun = new THREE.DirectionalLight(0xffefd2, 2.15);
 sun.position.copy(sunDir).multiplyScalar(320);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -240;
-sun.shadow.camera.right = 240;
-sun.shadow.camera.top = 240;
-sun.shadow.camera.bottom = -240;
-sun.shadow.camera.far = 900;
+sun.shadow.camera.left = -360;
+sun.shadow.camera.right = 360;
+sun.shadow.camera.top = 360;
+sun.shadow.camera.bottom = -360;
+sun.shadow.camera.far = 1200;
 sun.shadow.bias = -0.0004;
 scene.add(sun);
 
 setupEnvironment(scene, renderer);
 setupSky(scene, sunDir);
+setupCloudField(scene);
 
 const { root, pickables, spinners, glows, furnace, positions: equipmentMeshes,
-  stackTop, towerTops, waters, pipeFlows } = buildPlant();
+  stackTop, towerTops, waters, movers, pipeFlows } = buildPlant();
 scene.add(root);
+const processPipes = root.getObjectByName('pipes');
+if (processPipes) processPipes.visible = state.flowOn;
 
 /* ── Live atmosphere: stack smoke + cooling-tower steam plumes ── */
 const stackPlume = new Plume(scene, stackTop, {
@@ -264,52 +345,111 @@ function boom3D(target) {
 function clearBooms3D() { booms.forEach((b) => { scene.remove(b.m); b.m.geometry.dispose(); }); booms.length = 0; blackSmokeUntil = 0; }
 
 const allLabels = [];
+const zoneLabels = [];
 root.traverse((o) => {
-  if (o.element?.classList?.contains('plant-label') && !o.element.classList.contains('label-zone')) {
-    allLabels.push(o);
+  if (o.element?.classList?.contains('plant-label')) {
+    if (o.element.classList.contains('label-zone')) zoneLabels.push(o);
+    else allLabels.push(o);
   }
 });
 
-function setLabelVisibility(compId) {
+function setLabelVisibility(compId, zoneId = state.focusZone) {
+  const pathIds = new Set(processPath().steps.map(([id]) => id));
   allLabels.forEach((l) => {
     const pid = l.parent?.userData?.id;
-    l.element.classList.toggle('label-hidden', compId ? pid !== compId : true);
+    const pzone = l.parent?.userData?.zone;
+    const visible = compId
+      ? pid === compId
+      : state.labelsOn && ((zoneId && pzone === zoneId) || (!zoneId && state.focusPath && pathIds.has(pid)));
+    l.element.classList.toggle('label-hidden', !visible);
   });
+  zoneLabels.forEach((l) => l.element.classList.toggle('label-hidden', Boolean(compId) || !state.labelsOn || Boolean(state.focusPath)));
+}
+
+const selectionBox = new THREE.Box3Helper(new THREE.Box3(), 0x51d8ff);
+selectionBox.material.transparent = true;
+selectionBox.material.opacity = 0.9;
+selectionBox.visible = false;
+scene.add(selectionBox);
+
+const selectionRing = new THREE.Mesh(
+  new THREE.RingGeometry(0.78, 1, 64),
+  new THREE.MeshBasicMaterial({
+    color: 0x51d8ff, transparent: true, opacity: 0.5,
+    side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
+  }),
+);
+selectionRing.rotation.x = -Math.PI / 2;
+selectionRing.visible = false;
+scene.add(selectionRing);
+
+function updateSelectionMarker(id) {
+  const target = id && equipmentMeshes[id];
+  if (!target) {
+    selectionBox.visible = false;
+    selectionRing.visible = false;
+    return;
+  }
+  const bounds = new THREE.Box3().setFromObject(target);
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  selectionBox.box.copy(bounds).expandByScalar(1.5);
+  selectionBox.visible = true;
+  selectionRing.position.set(center.x, Math.max(0.3, bounds.min.y + 0.25), center.z);
+  selectionRing.scale.setScalar(THREE.MathUtils.clamp(Math.max(size.x, size.z) * 0.72, 7, 40));
+  selectionRing.visible = true;
 }
 
 function focusEquipment(id) {
   state.focusComp = id;
+  state.focusZone = null;
   document.querySelectorAll('.eq-btn').forEach((b) => b.classList.toggle('active', b.dataset.comp === id));
   document.querySelectorAll('.zone-chip').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('.path-step').forEach((b) => b.classList.toggle('active', b.dataset.comp === id));
   renderDetail(id);
   setLabelVisibility(id || null);
-  Object.entries(equipmentMeshes).forEach(([k, g]) => {
-    g.traverse((o) => {
-      if (o.isMesh && !o.userData?.pipe && o.material?.emissive) {
-        o.material.emissiveIntensity = k === id ? 0.4 : 0.05;
-      }
-    });
-  });
+  updateSelectionMarker(id);
   if (id && equipmentMeshes[id]) {
-    const p = new THREE.Vector3();
-    equipmentMeshes[id].getWorldPosition(p);
-    flyTo(p, 55);
+    const bounds = new THREE.Box3().setFromObject(equipmentMeshes[id]);
+    const p = bounds.getCenter(new THREE.Vector3());
+    const radius = bounds.getBoundingSphere(new THREE.Sphere()).radius;
+    flyTo(p, THREE.MathUtils.clamp(radius * 2.8, 48, 190));
   }
 }
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
-canvas.addEventListener('click', (e) => {
+const hoverTip = $('hover-tip');
+
+function pickAt(e) {
   const r = canvas.getBoundingClientRect();
   pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
   pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
   const hits = raycaster.intersectObjects(pickables, true);
-  if (!hits.length) return;
+  if (!hits.length) return null;
   let o = hits[0].object;
   while (o && !o.userData?.id) o = o.parent;
-  if (o?.userData?.id) focusEquipment(o.userData.id);
+  return o?.userData?.id || null;
+}
+
+canvas.addEventListener('click', (e) => {
+  const id = pickAt(e);
+  if (id) focusEquipment(id);
 });
+canvas.addEventListener('pointermove', (e) => {
+  const id = pickAt(e);
+  canvas.classList.toggle('can-pick', Boolean(id));
+  if (!id) {
+    hoverTip.classList.remove('visible');
+    return;
+  }
+  hoverTip.textContent = EQUIPMENT[id]?.name || id;
+  hoverTip.style.left = `${e.clientX + 14}px`;
+  hoverTip.style.top = `${e.clientY + 14}px`;
+  hoverTip.classList.add('visible');
+});
+canvas.addEventListener('pointerleave', () => hoverTip.classList.remove('visible'));
 
 let camFrom = camera.position.clone();
 let camTo = camera.position.clone();
@@ -357,6 +497,12 @@ function updateHUD(r) {
     : fdOff ? 'No FD fan' : !state.idFanOn ? 'ID fan off' : 'On bars';
   pill.className = `status-pill ${state.tripped ? 'bad' : !state.running || fdOff || !state.idFanOn ? 'warn' : 'good'}`;
 
+  $('metric-net').textContent = fmt(r.netMW, 0);
+  $('metric-heat').textContent = fmt(r.netHR, 0);
+  $('metric-so2').textContent = fmt(r.so2OutMg, 0);
+  $('metric-vacuum').textContent = fmt(r.vacuumKgcm2g, 3);
+  $('metric-so2-card').classList.toggle('alarm', r.so2OutMg > 200);
+
   if (state.focusComp) renderDetail(state.focusComp);
 }
 
@@ -391,6 +537,58 @@ function physicsStep(dt) {
   if (rampTarget != null && Math.abs(state.load - rampTarget) < 0.4) rampTarget = null;
 }
 
+function applyFlowFilter() {
+  if (!processPipes) return;
+  const systems = new Set(processPath().systems);
+  processPipes.visible = state.flowOn;
+  processPipes.children.forEach((p) => {
+    p.visible = systems.has(p.userData.system);
+  });
+}
+
+function renderPathUI() {
+  const path = processPath();
+  $('path-title').textContent = path.title;
+  $('path-note').textContent = path.note;
+  $('path-tabs').innerHTML = PROCESS_PATHS.map((p) =>
+    `<button type="button" class="path-tab ${p.id === path.id ? 'active' : ''}" data-path="${p.id}" style="--path-color:${p.color}">${p.name}</button>`).join('');
+  $('path-steps').innerHTML = path.steps.map(([id, text], i) =>
+    `<button type="button" class="path-step ${state.focusComp === id ? 'active' : ''}" data-comp="${id}" data-step="${i}" style="--path-color:${path.color}">${text}</button>`).join('');
+  $('path-tabs').querySelectorAll('.path-tab').forEach((b) => { b.onclick = () => selectPath(b.dataset.path); });
+  $('path-steps').querySelectorAll('.path-step').forEach((b) => {
+    b.onclick = () => {
+      state.guideOn = false;
+      $('btn-follow').classList.remove('active');
+      $('btn-follow').textContent = 'Follow path';
+      focusEquipment(b.dataset.comp);
+    };
+  });
+}
+
+function selectPath(id) {
+  state.focusPath = id;
+  state.focusZone = null;
+  state.focusComp = null;
+  state.flowOn = true;
+  $('btn-flow').classList.add('active');
+  document.querySelectorAll('.zone-chip').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('.eq-btn').forEach((b) => b.classList.remove('active'));
+  updateSelectionMarker(null);
+  renderDetail(null);
+  applyFlowFilter();
+  renderPathUI();
+  setLabelVisibility(null);
+}
+
+let guideIndex = 0;
+let guideElapsed = 0;
+function stepGuide() {
+  const path = processPath();
+  const [id] = path.steps[guideIndex % path.steps.length];
+  focusEquipment(id);
+  guideIndex = (guideIndex + 1) % path.steps.length;
+}
+
 /* ── UI wiring ── */
 $('zone-list').innerHTML = EQUIPMENT_GROUPS.map((g) => `
   <div class="eq-group"><div class="eq-group-title">${g.name}</div>
@@ -418,20 +616,72 @@ $('btn-ramp').onclick = () => {
   rampTarget = 100; state.loadSet = 100; syncControlOutputs(); tickSim();
 };
 $('btn-trip').onclick = () => { state.tripped = true; rampTarget = null; focusEquipment(null); tickSim(); };
-$('btn-overview').onclick = () => { camFrom.copy(camera.position); tgtFrom.copy(controls.target); camTo.set(280, 200, 320); tgtTo.set(10, 15, 10); camT = 0; focusEquipment(null); };
+$('btn-overview').onclick = () => {
+  camFrom.copy(camera.position); tgtFrom.copy(controls.target); camTo.set(315, 188, 355); tgtTo.set(15, 18, -12); camT = 0;
+  focusEquipment(null);
+  selectPath('generation');
+};
+$('btn-labels').onclick = () => {
+  state.labelsOn = !state.labelsOn;
+  $('btn-labels').classList.toggle('active', state.labelsOn);
+  setLabelVisibility(state.focusComp);
+};
+$('btn-flow').onclick = () => {
+  state.flowOn = !state.flowOn;
+  applyFlowFilter();
+  $('btn-flow').classList.toggle('active', state.flowOn);
+};
+$('btn-rotate').onclick = () => {
+  state.autoRotate = !state.autoRotate;
+  controls.autoRotate = state.autoRotate;
+  controls.autoRotateSpeed = 0.45;
+  $('btn-rotate').classList.toggle('active', state.autoRotate);
+};
+$('btn-follow').onclick = () => {
+  state.guideOn = !state.guideOn;
+  guideIndex = 0;
+  guideElapsed = 0;
+  $('btn-follow').classList.toggle('active', state.guideOn);
+  $('btn-follow').textContent = state.guideOn ? 'Stop guide' : 'Follow path';
+  if (state.guideOn) stepGuide();
+};
 
 $('zone-nav').innerHTML = ZONE_PADS.map((z) =>
   `<button type="button" class="zone-chip" data-zone="${z.id}" data-x="${z.x}" data-z="${z.z}">${z.label}</button>`).join('');
 document.querySelectorAll('.zone-chip').forEach((b) => {
   b.onclick = () => {
     document.querySelectorAll('.zone-chip').forEach((x) => x.classList.toggle('active', x === b));
+    state.focusComp = null;
+    state.focusZone = b.dataset.zone;
+    state.focusPath = null;
+    state.guideOn = false;
+    $('btn-follow').classList.remove('active');
+    $('btn-follow').textContent = 'Follow path';
+    updateSelectionMarker(null);
+    renderDetail(null);
+    document.querySelectorAll('.eq-btn').forEach((x) => x.classList.remove('active'));
+    setLabelVisibility(null, state.focusZone);
+    const zoneViews = {
+      'z-fuel': { pos: [-95, 72, 70], target: [-185, 14, -70] },
+      'z-dm': { pos: [-72, 58, 245], target: [-158, 9, 150] },
+      'z-boiler': { pos: [92, 70, 80], target: [0, 31, -26] },
+      'z-turbine': { pos: [225, 58, 88], target: [120, 12, -12] },
+      'z-cw': { pos: [390, 100, 315], target: [235, 12, 150] },
+      'z-env': { pos: [158, 78, -55], target: [25, 22, -155] },
+      'z-ash': { pos: [105, 58, 235], target: [-12, 8, 145] },
+      'z-grid': { pos: [345, 72, 25], target: [245, 10, -92] },
+      'z-h2': { pos: [285, 55, 170], target: [190, 8, 90] },
+    };
+    const view = zoneViews[b.dataset.zone];
     camFrom.copy(camera.position); tgtFrom.copy(controls.target);
-    camTo.set(+b.dataset.x + 80, 70, +b.dataset.z + 100);
-    tgtTo.set(+b.dataset.x, 8, +b.dataset.z);
+    camTo.set(...view.pos);
+    tgtTo.set(...view.target);
     camT = 0;
   };
 });
-setLabelVisibility(null);
+renderPathUI();
+applyFlowFilter();
+setLabelVisibility(null, null);
 
 $('scenario-row').innerHTML = SCENARIOS.map((s) =>
   `<button class="scenario-chip" data-id="${s.id}" title="${s.note}">${s.name}</button>`).join('');
@@ -469,6 +719,13 @@ let tAcc = 0;
     simAcc = 0;
     tickSim();
   }
+  if (state.guideOn) {
+    guideElapsed += dt;
+    if (guideElapsed > 4.2) {
+      guideElapsed = 0;
+      stepGuide();
+    }
+  }
 
   if (camT < 1) {
     camT = Math.min(1, camT + dt / 1.4);
@@ -503,6 +760,22 @@ let tAcc = 0;
   for (let i = booms.length - 1; i >= 0; i--) {
     if (booms[i].t > 1.25) { scene.remove(booms[i].m); booms[i].m.geometry.dispose(); booms.splice(i, 1); }
   }
+
+  if (selectionRing.visible) {
+    selectionRing.material.opacity = 0.34 + Math.sin(tAcc * 3.5) * 0.16;
+    selectionRing.rotation.z -= dt * 0.25;
+  }
+
+  movers.forEach((m) => {
+    const route = m.userData.route;
+    if (!route || !state.running) return;
+    m.position[route.axis] += route.speed * route.dir * dt;
+    if (m.position[route.axis] > route.max || m.position[route.axis] < route.min) {
+      route.dir *= -1;
+      m.rotation.y += Math.PI;
+      m.position[route.axis] = THREE.MathUtils.clamp(m.position[route.axis], route.min, route.max);
+    }
+  });
 
   controls.update();
   renderer.render(scene, camera);

@@ -13,6 +13,42 @@ export const M = {
   coal: new THREE.MeshStandardMaterial({ color: 0x3a4450, roughness: 0.9 }),
 };
 
+function addBox(g, w, h, d, material, x, y, z) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  m.position.set(x, y, z);
+  m.castShadow = true;
+  m.receiveShadow = true;
+  g.add(m);
+  return m;
+}
+
+function addCyl(g, rt, rb, h, material, x, y, z, segments = 18) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, segments), material);
+  m.position.set(x, y, z);
+  m.castShadow = true;
+  m.receiveShadow = true;
+  g.add(m);
+  return m;
+}
+
+function addBeam(g, a, b, thickness = 0.28, material = M.metal) {
+  const p0 = new THREE.Vector3(...a);
+  const p1 = new THREE.Vector3(...b);
+  const m = new THREE.Mesh(new THREE.BoxGeometry(thickness, thickness, p0.distanceTo(p1)), material);
+  m.position.copy(p0).add(p1).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), p1.clone().sub(p0).normalize());
+  m.castShadow = true;
+  g.add(m);
+  return m;
+}
+
+function addPlatform(g, w, d, x, y, z) {
+  addBox(g, w, 0.3, d, M.metalDark, x, y, z);
+  const rail = new THREE.MeshStandardMaterial({ color: 0xd6a914, metalness: 0.35, roughness: 0.55 });
+  addBeam(g, [x - w / 2, y + 1, z - d / 2], [x + w / 2, y + 1, z - d / 2], 0.12, rail);
+  addBeam(g, [x - w / 2, y + 1, z + d / 2], [x + w / 2, y + 1, z + d / 2], 0.12, rail);
+}
+
 function buildChimney() {
   const g = new THREE.Group();
   const bands = 12;
@@ -41,63 +77,83 @@ function buildChimney() {
 
 function buildEsp() {
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.BoxGeometry(22, 12, 14), M.concrete);
-  body.position.y = 14;
-  g.add(body);
-  for (let i = 0; i < 4; i++) {
-    const hop = new THREE.Mesh(new THREE.ConeGeometry(3, 6, 4), M.concrete);
-    hop.position.set(-7.5 + i * 5, 6, 0);
-    hop.rotation.y = Math.PI / 4;
-    g.add(hop);
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.2, 2, 8), M.metalDark);
-    neck.position.set(-7.5 + i * 5, 2.5, 0);
-    g.add(neck);
+  for (let field = 0; field < 4; field++) {
+    const x = -12 + field * 8;
+    addBox(g, 7, 13, 16, field % 2 ? M.concrete : M.white, x, 16, 0);
+    addBox(g, 5, 1.4, 4, M.metalDark, x, 23.4, 0);
+    for (let z = -1; z <= 1; z += 2) {
+      const hop = new THREE.Mesh(new THREE.ConeGeometry(3.2, 7, 4), M.concrete);
+      hop.position.set(x, 6.2, z * 4);
+      hop.rotation.y = Math.PI / 4;
+      hop.castShadow = true;
+      g.add(hop);
+      addCyl(g, 0.6, 0.8, 2.2, M.metalDark, x, 1.7, z * 4, 10);
+    }
   }
-  const duct = new THREE.Mesh(new THREE.BoxGeometry(24, 2, 3), M.metal);
-  duct.position.y = 1;
-  g.add(duct);
+  addPlatform(g, 34, 18, 0, 24.8, 0);
+  for (let x = -16; x <= 16; x += 8) {
+    addBox(g, 0.4, 24, 0.4, M.metal, x, 12, -9);
+    addBox(g, 0.4, 24, 0.4, M.metal, x, 12, 9);
+  }
   return g;
 }
 
 function buildFgd() {
   const g = new THREE.Group();
-  const tower = new THREE.Mesh(new THREE.CylinderGeometry(5.5, 6, 20, 24), M.metal);
-  tower.position.y = 10;
-  g.add(tower);
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(5.8, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M.metalDark);
-  dome.position.y = 20;
+  addCyl(g, 7, 7.5, 28, M.metal, 0, 14, 0, 32);
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(7.05, 32, 14, 0, Math.PI * 2, 0, Math.PI / 2), M.metalDark);
+  dome.position.y = 28;
+  dome.castShadow = true;
   g.add(dome);
-  for (let i = 0; i < 5; i++) {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(5.2, 0.15, 8, 32), M.metalDark);
+  for (let i = 0; i < 7; i++) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(7.15, 0.16, 8, 40), M.safety || M.copper);
     ring.rotation.x = Math.PI / 2;
-    ring.position.y = 4 + i * 3.5;
+    ring.position.y = 4 + i * 4;
     g.add(ring);
   }
+  addCyl(g, 3.6, 3.8, 7, M.pumpBlue, 11, 3.5, 4, 20);
+  addCyl(g, 3.6, 3.8, 7, M.pumpBlue, 11, 3.5, -5, 20);
+  addBox(g, 12, 7, 8, M.concrete, -13, 3.5, 0);
+  for (let y = 6; y <= 26; y += 5) addPlatform(g, 16, 2, 0, y, -7.5);
   return g;
 }
 
 function buildBoiler() {
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.BoxGeometry(18, 38, 14), M.metalDark);
-  body.position.y = 19;
-  body.castShadow = true;
-  g.add(body);
+  addBox(g, 22, 38, 18, M.metalDark, 0, 19, 0);
+  addBox(g, 28, 15, 22, M.concrete, 0, 45, 0);
+  addBox(g, 31, 7, 24, M.metal, 0, 56, 0);
+  addBox(g, 33, 1.2, 26, M.metalDark, 0, 60, 0);
   const drum = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 15, 28), M.metal);
   drum.rotation.z = Math.PI / 2;
-  drum.position.set(0, 36, 0);
+  drum.position.set(0, 54, 0);
+  drum.castShadow = true;
   g.add(drum);
   for (let i = 0; i < 8; i++) {
     const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 28, 8), M.metal);
-    tube.position.set(-6 + i * 1.7, 22, 6.5);
+    tube.position.set(-7 + i * 2, 24, 8.5);
     g.add(tube);
   }
   const furnace = new THREE.Mesh(
     new THREE.BoxGeometry(12, 10, 10),
     new THREE.MeshStandardMaterial({ color: 0xff5c1a, emissive: 0xff3a00, emissiveIntensity: 0.6 })
   );
-  furnace.position.y = 8;
+  furnace.position.set(0, 10, 4.4);
   furnace.name = 'furnaceGlow';
   g.add(furnace);
+
+  for (let y = 12; y <= 58; y += 9) addPlatform(g, 30, 2.4, 0, y, -10.5);
+  for (let x = -14; x <= 14; x += 7) {
+    addBox(g, 0.45, 59, 0.45, M.metal, x, 29.5, -11.5);
+    addBox(g, 0.45, 59, 0.45, M.metal, x, 29.5, 11.5);
+  }
+  for (let i = 0; i < 4; i++) {
+    const x = -10.5 + i * 7;
+    const hopper = new THREE.Mesh(new THREE.ConeGeometry(3.2, 9, 4), M.concrete);
+    hopper.rotation.y = Math.PI / 4;
+    hopper.position.set(x, 21, -14);
+    g.add(hopper);
+  }
   return g;
 }
 
@@ -127,6 +183,14 @@ function buildTurbineHall() {
   const base = new THREE.Mesh(new THREE.BoxGeometry(42, 2, 10), M.metalDark);
   base.position.y = -4;
   g.add(base);
+  addPlatform(g, 47, 15, 14, -2.7, 0);
+  for (let x = -5; x <= 38; x += 7) {
+    addBox(g, 0.4, 14, 0.4, M.truss, x, 3, -8);
+    addBox(g, 0.4, 14, 0.4, M.truss, x, 3, 8);
+  }
+  addBeam(g, [-5, 10, -8], [42, 10, -8], 0.42, M.truss);
+  addBeam(g, [-5, 10, 8], [42, 10, 8], 0.42, M.truss);
+  addBox(g, 1, 1, 18, new THREE.MeshStandardMaterial({ color: 0xe5b827 }), 15, 11, 0);
   return g;
 }
 
@@ -193,50 +257,49 @@ function buildCoolingTower() {
 
 function buildCoalYard() {
   const g = new THREE.Group();
-  const pile = new THREE.Mesh(new THREE.ConeGeometry(14, 7, 6), M.coal);
-  pile.position.y = 3.5;
-  g.add(pile);
-  const conveyor = new THREE.Mesh(new THREE.BoxGeometry(32, 0.6, 0.6), M.truss);
-  conveyor.position.set(8, 10, 0);
-  conveyor.rotation.z = -0.65;
-  g.add(conveyor);
+  for (let i = 0; i < 4; i++) {
+    const pile = new THREE.Mesh(new THREE.ConeGeometry(8 + i % 2, 6 + i % 3, 20), M.coal);
+    pile.position.set(-14 + i * 9, 3.5, -3 + (i % 2) * 6);
+    pile.scale.z = 0.7;
+    g.add(pile);
+  }
+  const conveyor = addBox(g, 40, 0.9, 1.3, M.truss, 8, 11, 0);
+  conveyor.rotation.z = -0.44;
+  addBox(g, 20, 1, 1.4, M.truss, 15, 15, 0);
+  addCyl(g, 2, 2, 3, M.metalDark, -4, 2, 0, 16);
   for (let i = 0; i < 10; i++) {
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4, 0.2), M.truss);
-    leg.position.set(-2 + i * 3, 5, 0);
-    leg.rotation.z = -0.65;
-    g.add(leg);
+    addBox(g, 0.25, 7, 0.25, M.truss, -7 + i * 4, 4.5, 0);
   }
   return g;
 }
 
 function buildSwitchyard() {
   const g = new THREE.Group();
-  const mkTower = (x) => {
-    const t = new THREE.Group();
-    [-2, 2].forEach((ox) => {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 18, 0.35), M.metal);
-      leg.position.set(x + ox, 9, 0);
-      t.add(leg);
-    });
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(6, 0.3, 0.3), M.metal);
-    arm.position.set(x, 17, 0);
-    t.add(arm);
-    g.add(t);
-  };
-  mkTower(-8);
-  mkTower(0);
-  mkTower(8);
-  const gt = new THREE.Mesh(new THREE.BoxGeometry(5, 7, 6), M.metalDark);
-  gt.position.set(-4, 3.5, 6);
-  g.add(gt);
+  for (let row = 0; row < 3; row++) {
+    for (let bay = 0; bay < 5; bay++) {
+      const x = -16 + bay * 8;
+      const z = -10 + row * 10;
+      [-1.5, 1.5].forEach((ox) => {
+        addCyl(g, 0.3, 0.4, 5, row % 2 ? M.red : M.white, x + ox, 2.5, z, 10);
+      });
+      addBox(g, 5, 0.8, 2.2, M.metalDark, x, 0.7, z + 3);
+    }
+    addBeam(g, [-20, 7, -10 + row * 10], [20, 7, -10 + row * 10], 0.22, M.copper);
+  }
+  [-20, 0, 20].forEach((x) => {
+    addBox(g, 0.4, 15, 0.4, M.metal, x, 7.5, -14);
+    addBox(g, 0.4, 15, 0.4, M.metal, x, 7.5, 14);
+    addBeam(g, [x, 15, -14], [x, 15, 14], 0.35, M.metal);
+  });
   return g;
 }
 
 function buildCondenser() {
   const g = new THREE.Group();
-  const shell = new THREE.Mesh(new THREE.BoxGeometry(16, 6, 10), M.metal);
-  shell.position.y = 3;
-  g.add(shell);
+  addBox(g, 18, 7, 12, M.metal, 0, 3.5, 0);
+  addBox(g, 20, 1, 14, M.metalDark, 0, 7.5, 0);
+  addCyl(g, 4.5, 5.5, 7, M.concrete, -5, 11, 0, 24);
+  addCyl(g, 4.5, 5.5, 7, M.concrete, 5, 11, 0, 24);
   for (let i = 0; i < 12; i++) {
     const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 14, 6), M.metalDark);
     tube.rotation.z = Math.PI / 2;

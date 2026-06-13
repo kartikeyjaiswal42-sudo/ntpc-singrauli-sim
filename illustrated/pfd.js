@@ -35,11 +35,11 @@ const N = {
   'c-deaerator':{ x: 720, y: 606, w: 130, h: 70, t: 'Deaerator',         v: () => 'de-aerate' },
   'c-tdbfp':    { x: 540, y: 606, w: 130, h: 70, t: 'Boiler feed pump',  v: (r) => `${f(r.steamTh * 1.02)} t/h` },
   'c-esp':      { x: 40,  y: 720, w: 150, h: 70, t: 'ESP',               v: (r) => `${f(r.pmOutMg)} mg/Nm³` },
-  'c-fgd':      { x: 250, y: 720, w: 150, h: 70, t: 'FGD scrubber',      v: (r) => `SO₂ ${f(r.so2OutMg)}` },
-  'c-idf':      { x: 460, y: 720, w: 120, h: 70, t: 'ID fan',            v: () => 'draught' },
+  'c-idf':      { x: 250, y: 720, w: 120, h: 70, t: 'ID fan',            v: () => 'draught' },
+  'c-fgd':      { x: 420, y: 720, w: 150, h: 70, t: 'FGD / bypass',      v: (r) => `SO₂ ${f(r.so2OutMg)}` },
   'c-stack':    { x: 640, y: 640, w: 96,  h: 168, t: 'Stack',           v: (r) => `${f(r.co2Th)} t/h CO₂` },
   'c-cwp':      { x: 1320, y: 740, w: 130, h: 64, t: 'CW pumps',         v: (r) => `${f(r.cwM3h)} m³/h` },
-  'c-ct':       { x: 1510, y: 600, w: 150, h: 92, t: 'Cooling tower',    v: (r) => `ΔT ${f(r.cwDeltaT, 1)} °C` },
+  'c-outfall':  { x: 1510, y: 600, w: 150, h: 92, t: 'Rihand / outfall', v: (r) => `ΔT ${f(r.cwDeltaT, 1)} °C` },
 };
 
 const cx = (id) => N[id].x + N[id].w / 2;
@@ -81,16 +81,16 @@ const E = [
   { a: ['c-cep', 'L'], b: ['c-deaerator', 'R'], c: C.feed, l: () => 'LP heaters →' },
   { a: ['c-deaerator', 'L'], b: ['c-tdbfp', 'R'], c: C.feed, l: () => 'de-aerated' },
   { a: ['c-tdbfp', 'L'], b: ['c-eco', 'B'], c: C.feed, l: (r) => `feed ${f(r.steamTh * 1.02)} t/h`, m: 'v' },
-  // cooling water loop
+  // Singrauli Stage-I/II once-through cooling water
   { a: ['c-cwp', 'T'], b: ['c-cond', 'B'], c: C.cw, l: (r) => `CW ${f(r.cwM3h)} m³/h`, m: 'v' },
-  { a: ['c-cond', 'R'], b: ['c-ct', 'L'], c: C.cwhot, l: (r) => `hot +${f(r.cwDeltaT, 1)}°C` },
-  { a: ['c-ct', 'B'], b: ['c-cwp', 'R'], c: C.cw, l: () => 'cooled', m: 'v' },
+  { a: ['c-cond', 'R'], b: ['c-outfall', 'L'], c: C.cwhot, l: (r) => `discharge +${f(r.cwDeltaT, 1)}°C` },
+  { a: ['c-outfall', 'B'], b: ['c-cwp', 'R'], c: C.cw, l: () => 'Rihand intake', m: 'v' },
   // flue-gas train
   { a: ['c-furnace', 'B'], b: ['c-eco', 'T'], c: C.flue, l: () => 'flue gas', m: 'v', hide: true },
   { a: ['c-eco', 'B'], b: ['c-esp', 'T'], c: C.flue, l: () => 'flue gas', m: 'v' },
-  { a: ['c-esp', 'R'], b: ['c-fgd', 'L'], c: C.flue, l: (r) => `PM ${f(r.pmOutMg)}` },
-  { a: ['c-fgd', 'R'], b: ['c-idf', 'L'], c: C.flue, l: () => 'scrubbed' },
-  { a: ['c-idf', 'R'], b: ['c-stack', 'L'], c: C.flue, l: () => 'to stack' },
+  { a: ['c-esp', 'R'], b: ['c-idf', 'L'], c: C.flue, l: (r) => `PM ${f(r.pmOutMg)}` },
+  { a: ['c-idf', 'R'], b: ['c-fgd', 'L'], c: C.flue, l: () => 'to retrofit / bypass' },
+  { a: ['c-fgd', 'R'], b: ['c-stack', 'L'], c: C.flue, l: () => 'to stack' },
 ];
 
 function nodeSVG(id) {
@@ -137,7 +137,7 @@ export function buildPFD() {
     <text class="pfd-band" x="30" y="60">FUEL · AIR · FLUE GAS</text>
     <text class="pfd-band" x="770" y="60">STEAM CYCLE → GENERATOR → 400 kV GRID</text>
     <text class="pfd-band" x="540" y="585">CONDENSATE · FEED-WATER LOOP</text>
-    <text class="pfd-band" x="1300" y="585">CIRCULATING-WATER LOOP</text>`;
+    <text class="pfd-band" x="1300" y="585">ONCE-THROUGH COOLING WATER</text>`;
   const edges = E.map(edgeSVG).join('');
   const nodes = Object.keys(N).map(nodeSVG).join('');
   return PFD_HEADER(defs + bg + bands + edges + nodes);

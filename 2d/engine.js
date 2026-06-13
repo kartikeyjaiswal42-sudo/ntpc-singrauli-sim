@@ -11,8 +11,8 @@
 
 export const DESIGN = Object.freeze({
   ratedMW: 500,            // gross machine rating
-  grossHeatRate100: 2375,  // design gross station heat rate, kcal/kWh @ 100% MCR
-  auxPowerFrac: 0.0855,    // auxiliary consumption as fraction of gross
+  grossHeatRate100: 2281,  // Singrauli Stage-II design gross heat rate, kcal/kWh @ 100% MCR
+  auxPowerFrac: 0.0525,    // steam-driven BFP + open-cycle CW station basis
   genEff: 0.9862,          // generator electrical efficiency
   mechEff: 0.994,          // turbine mechanical / coupling efficiency
   boilerEff100: 0.864,     // boiler efficiency @ MCR (PG test basis)

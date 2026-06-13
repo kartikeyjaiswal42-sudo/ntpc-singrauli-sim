@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { MODELS } from '../scripts/model-builders.js';
+import { createIndustrialDetail } from './industrial.js';
 
 const COL = {
   coal: 0x2a2a30,
@@ -95,7 +96,7 @@ export const ZONE_PADS = [
   { id: 'z-dm', label: 'WATER', x: -180, z: 130, w: 180, d: 100, color: 0x42a5f5 },
   { id: 'z-boiler', label: 'BOILER', x: 0, z: -30, w: 120, d: 100, color: 0x90a4ae },
   { id: 'z-turbine', label: 'TURBINE', x: 120, z: -20, w: 140, d: 90, color: 0x4db6ac },
-  { id: 'z-cw', label: 'COOLING WATER', x: 175, z: 130, w: 180, d: 100, color: 0x29b6f6 },
+  { id: 'z-cw', label: 'OPEN-CYCLE CW', x: 205, z: 145, w: 230, d: 130, color: 0x29b6f6 },
   { id: 'z-env', label: 'EMISSIONS', x: 45, z: -150, w: 160, d: 90, color: 0x81c784 },
   { id: 'z-ash', label: 'ASH', x: -30, z: 155, w: 120, d: 80, color: 0xa1887f },
   { id: 'z-grid', label: 'GRID', x: 210, z: -70, w: 120, d: 90, color: 0xffb74d },
@@ -136,7 +137,7 @@ function cyl(rt, rb, h, seg, color, id, zone, lbl, sub) {
   return part(id, zone, m, 0, h / 2 + 5, 0, lbl, sub);
 }
 
-function pipe(points, radius, color, name, speed = 1) {
+function pipe(points, radius, color, name, speed = 1, system = name) {
   const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)));
   const len = curve.getLength();
   const geo = new THREE.TubeGeometry(curve, 64, radius, 12, false);
@@ -149,6 +150,7 @@ function pipe(points, radius, color, name, speed = 1) {
   }));
   mesh.castShadow = true;
   mesh.userData.pipe = name;
+  mesh.userData.system = system;
   pipeFlows.push({ tex, speed });
   return mesh;
 }
@@ -173,6 +175,24 @@ function bandedStack(rTop, rBot, h, segH, id, zone, lbl, sub) {
     seg.castShadow = true;
     g.add(seg);
   }
+  // Aviation balconies, ladder and service cage make the stack read at scale.
+  for (let y = 10; y < h; y += 10) {
+    const t = y / h;
+    const r = rBot + (rTop - rBot) * t;
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(r + 0.45, 0.16, 6, 32),
+      new THREE.MeshStandardMaterial({ color: 0x59646d, metalness: 0.7, roughness: 0.48 }),
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = y;
+    g.add(ring);
+  }
+  const ladder = new THREE.Mesh(
+    new THREE.BoxGeometry(0.22, h - 4, 0.22),
+    new THREE.MeshStandardMaterial({ color: 0x4d5961, metalness: 0.72, roughness: 0.46 }),
+  );
+  ladder.position.set(rBot + 0.25, h / 2, 0);
+  g.add(ladder);
   const l = label(lbl, sub);
   l.position.set(0, h + 6, 0);
   g.add(l);
@@ -183,7 +203,12 @@ function bandedStack(rTop, rBot, h, segH, id, zone, lbl, sub) {
 function detailComp(builderName, id, zone, scale, lbl, sub, lblY = 22) {
   const inner = MODELS[builderName]();
   inner.scale.setScalar(scale);
-  inner.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  inner.traverse((o) => {
+    if (!o.isMesh) return;
+    if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+    o.castShadow = (o.geometry.boundingSphere?.radius || 0) > 1.8;
+    o.receiveShadow = true;
+  });
   const g = new THREE.Group();
   g.userData = { id, zone };
   g.add(inner);
@@ -293,6 +318,66 @@ function conveyorGallery(x0, y0, z0, x1, y1, z1) {
   return g;
 }
 
+// Site context keeps the wide overview legible and gives the plant a real footprint.
+function siteRoad(w, d, x, z, rotation = 0) {
+  const g = new THREE.Group();
+  g.position.set(x, 0.14, z);
+  g.rotation.y = rotation;
+  const asphalt = new THREE.Mesh(
+    new THREE.BoxGeometry(w, 0.14, d),
+    new THREE.MeshStandardMaterial({ color: 0x343b40, roughness: 0.96, metalness: 0.02 }),
+  );
+  asphalt.receiveShadow = true;
+  g.add(asphalt);
+
+  const edgeMat = new THREE.MeshStandardMaterial({ color: 0xd7d2bd, roughness: 0.9 });
+  [-1, 1].forEach((side) => {
+    const curb = new THREE.Mesh(new THREE.BoxGeometry(w, 0.25, 0.34), edgeMat);
+    curb.position.set(0, 0.12, side * (d / 2 + 0.12));
+    curb.receiveShadow = true;
+    g.add(curb);
+  });
+
+  const dashMat = new THREE.MeshBasicMaterial({ color: 0xe9d96b });
+  const count = Math.max(2, Math.floor(w / 20));
+  for (let i = 0; i < count; i++) {
+    const dash = new THREE.Mesh(new THREE.BoxGeometry(7, 0.03, 0.18), dashMat);
+    dash.position.set(-w / 2 + 10 + i * 20, 0.1, 0);
+    g.add(dash);
+  }
+  return g;
+}
+
+function siteFence(w, d) {
+  const g = new THREE.Group();
+  const matFence = new THREE.MeshStandardMaterial({ color: 0x59656c, metalness: 0.7, roughness: 0.55 });
+  const rail = (rw, rd, x, z) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(rw, 1.8, rd), matFence);
+    m.position.set(x, 0.9, z);
+    m.castShadow = true;
+    g.add(m);
+  };
+  rail(w, 0.22, 0, -d / 2); rail(w, 0.22, 0, d / 2);
+  rail(0.22, d, -w / 2, 0); rail(0.22, d, w / 2, 0);
+  return g;
+}
+
+function siteLights(points) {
+  const g = new THREE.Group();
+  const poleMat = new THREE.MeshStandardMaterial({ color: 0x59656c, metalness: 0.75, roughness: 0.42 });
+  const lampMat = new THREE.MeshStandardMaterial({
+    color: 0xdceeff, emissive: 0x8acfff, emissiveIntensity: 0.75, roughness: 0.25,
+  });
+  points.forEach(([x, z]) => {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.2, 7, 8), poleMat);
+    pole.position.set(x, 3.5, z);
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 8), lampMat);
+    lamp.position.set(x, 7.1, z);
+    g.add(pole, lamp);
+  });
+  return g;
+}
+
 /** NTPC Singrauli Stage-II — spaced 3D layout (metres, Y up) */
 export function buildPlant() {
   const root = new THREE.Group();
@@ -300,6 +385,7 @@ export function buildPlant() {
   const pickables = [];
   const spinners = [];
   const glows = [];
+  const movers = [];
 
   const add = (g, x, y, z) => {
     g.position.set(x, y, z);
@@ -319,7 +405,7 @@ export function buildPlant() {
 
   /* ── Site base (NTPC Singrauli plant area) ── */
   const site = new THREE.Mesh(
-    new THREE.PlaneGeometry(620, 520),
+    new THREE.PlaneGeometry(860, 660),
     new THREE.MeshStandardMaterial({
       map: noiseTexture('#6f7d52', '#586945', '#869268', { repeat: 10 }),
       roughness: 0.96, metalness: 0, envMapIntensity: 0.4,
@@ -329,14 +415,27 @@ export function buildPlant() {
   site.receiveShadow = true;
   root.add(site);
 
-  const pad = new THREE.Mesh(new THREE.PlaneGeometry(560, 420), new THREE.MeshStandardMaterial({
-    map: noiseTexture('#9a9f96', '#83887e', '#b0b4aa', { repeat: 9 }),
+  const pad = new THREE.Mesh(new THREE.PlaneGeometry(650, 500), new THREE.MeshStandardMaterial({
+    map: noiseTexture('#8c908a', '#727871', '#a5a8a0', { repeat: 10 }),
     roughness: 0.92, metalness: 0.05, envMapIntensity: 0.45,
   }));
   pad.rotation.x = -Math.PI / 2;
   pad.position.y = 0.05;
   pad.receiveShadow = true;
   root.add(pad);
+
+  root.add(
+    siteRoad(520, 9, 10, 72),
+    siteRoad(500, 8, 0, -112),
+    siteRoad(360, 8, -82, 45, Math.PI / 2),
+    siteRoad(330, 8, 180, 40, Math.PI / 2),
+    siteFence(590, 490),
+    siteLights([
+      [-230, 68], [-170, 68], [-110, 68], [-50, 68], [10, 68], [70, 68], [130, 68], [190, 68], [250, 68],
+      [-86, -90], [-86, -30], [-86, 30], [-86, 120], [-86, 180],
+      [176, -90], [176, -30], [176, 100], [176, 160],
+    ]),
+  );
 
   const sign = label('NTPC SINGRAULI · STAGE-II · 500 MW', 'Singrauli · coal → grid', false);
   sign.position.set(0, 12, -280);
@@ -346,7 +445,7 @@ export function buildPlant() {
     const pad = new THREE.Mesh(
       new THREE.PlaneGeometry(zp.w, zp.d),
       new THREE.MeshStandardMaterial({
-        color: zp.color, transparent: true, opacity: 0.14,
+        color: zp.color, transparent: true, opacity: 0.075,
         roughness: 1, metalness: 0, depthWrite: false,
       }),
     );
@@ -363,7 +462,7 @@ export function buildPlant() {
   let furnace = null;
 
   /* ═══ COAL & CHP (far west) ═══ */
-  add(box(140, 1, 4, 0x4a4038, 'c-mgr', 'z-fuel', 'MGR Railway', '22 km from Nigahi'), -240, 0.5, -120);
+  add(box(140, 1, 4, 0x4a4038, 'c-mgr', 'z-fuel', 'MGR Railway', 'From Jayant / Bina mines'), -240, 0.5, -120);
   add(box(14, 6, 20, COL.steel, 'c-hopper', 'z-fuel', 'Track hopper', 'Bottom discharge'), -195, 3, -95);
   add(part('c-chp', 'z-fuel', building(30, 16, 22, 0x9aa6b2), 0, 22, 0, 'Coal Handling Plant', '2400 MTPH'), -165, 0, -70);
   add(detailComp('coal_yard', 'c-stock', 'z-fuel', 1.25, 'Coal stockyard', 'Stacker-reclaimer', 26), -215, 0, -55);
@@ -404,9 +503,9 @@ export function buildPlant() {
   const bcpL = label('BCP ×3', 'CC+ circulation'); bcpL.position.set(0, 10, 0); bcp.add(bcpL);
   add(bcp, 0, 2, 7);
 
-  const fan = (id, lbl, sub, x, z) => {
+  const fan = (id, lbl, sub, x, z, zone = 'z-boiler') => {
     const g = new THREE.Group();
-    g.userData = { id, zone: 'z-boiler' };
+    g.userData = { id, zone };
     const housing = new THREE.Mesh(new THREE.CylinderGeometry(3.7, 3.7, 2.4, 22), mat(0x55606e));
     housing.castShadow = true;
     const hub = new THREE.Group();
@@ -423,10 +522,10 @@ export function buildPlant() {
     add(g, x, 3, z);
   };
   fan('c-fd', 'FD Fan', 'Forced draft', -56, 16);
-  fan('c-idf', 'ID Fan', 'Induced draft', 56, 16);
   fan('c-paf', 'PA Fan', 'Primary air to mills', -72, -6);
+  fan('c-idf', 'ID Fan', 'After ESP · induced draft', 18, -118, 'z-env');
 
-  add(part('c-aph', 'z-boiler', new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 8, 22), mat(0xb98a3a)), 0, 9, 0, 'APH', 'Ljungström regenerative'), 45, 4, -5);
+  add(part('c-aph', 'z-boiler', new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 8, 22), mat(0xb98a3a)), 0, 9, 0, 'APH', 'Flue gas ↔ combustion air'), 38, 4, -72);
 
   /* ═══ TURBINE HALL (far east) ═══ */
   const hall = detailComp('turbine_hall', 'c-gen', 'z-turbine', 1.15, 'Turbine–Generator', 'HP/IP/LP · 3000 rpm · 500 MW', 17);
@@ -435,9 +534,12 @@ export function buildPlant() {
   const tframe = steelFrame(74, 24, 30, 4); tframe.position.set(122, 0, -15); root.add(tframe);
 
   add(detailComp('condenser', 'c-cond', 'z-turbine', 1.4, 'Surface condenser', 'Cold CW IN · Hot CW OUT', 12), 132, 0, 42);
+  add(box(4, 4, 4, 0x287eb8, 'c-cep', 'z-turbine', 'CEP', 'Hotwell → LP heaters'), 108, 2, 52);
+  add(box(18, 5, 7, 0x55a9c9, 'c-lph', 'z-turbine', 'LP heaters', 'Extraction steam heating'), 82, 2.5, 58);
   add(box(5, 5, 5, COL.steel, 'c-tdbfp', 'z-turbine', 'TDBFP', 'Steam-driven'), 70, 2.5, 30);
   add(box(4, 4, 4, 0x4890c0, 'c-mdbfp', 'z-turbine', 'MDBFP', 'Motor standby'), 82, 2, 35);
   add(box(3, 3, 4, 0x2890e8, 'c-bfp-boost', 'z-turbine', 'Booster BFP', ''), 58, 1.5, 25);
+  add(box(18, 6, 8, 0x48a1b8, 'c-hph', 'z-turbine', 'HP heaters', 'BFP → economizer'), 38, 3, 32);
 
   // service pipe racks tying the islands together
   root.add(pipeRack(16, -20, 92, -16, 12, 4));
@@ -450,36 +552,20 @@ export function buildPlant() {
   add(box(32, 10, 14, 0x64b5f6, 'c-dm', 'z-dm', 'DM Water Plant', 'SAC·Degas·SBA·MB'), -155, 5, 155);
   add(cyl(6, 6, 8, 12, 0x78909c, 'c-deaerator', 'z-dm', 'Deaerator', 'O₂ removal'), -95, 4, 140);
 
-  /* ═══ COOLING WATER (far south-east) ═══ */
+  /* ═══ ONCE-THROUGH COOLING WATER (Rihand Reservoir) ═══ */
   const ph = detailComp('pump_house', 'c-cwp', 'z-cw', 1.0, 'CW Pump House', '×5 vertical CW pumps', 18);
   ph.userData._inner.traverse((o) => { if (o.name === 'spinner') spinners.push(o); });
   add(ph, 150, 0, 118);
 
-  const tower = (x, z) => {
-    const g = new THREE.Group();
-    g.userData = { id: 'c-ct', zone: 'z-cw' };
-    // hyperboloid-ish shell: narrow waist then flare to a wider throat
-    const t = new THREE.Mesh(new THREE.CylinderGeometry(11, 15, 38, 28, 1, true),
-      new THREE.MeshStandardMaterial({ color: 0xcdd9e0, metalness: 0.1, roughness: 0.9,
-        side: THREE.DoubleSide, envMapIntensity: 0.5 }));
-    t.position.y = 19;
-    t.castShadow = true;
-    const waist = new THREE.Mesh(new THREE.CylinderGeometry(9, 11, 14, 28, 1, true),
-      new THREE.MeshStandardMaterial({ color: 0xc4d2da, metalness: 0.1, roughness: 0.9,
-        side: THREE.DoubleSide, envMapIntensity: 0.5 }));
-    waist.position.y = 40;
-    const basin = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, 2, 28), waterMat(0x2f6f86));
-    basin.position.y = 1;
-    waters.push(basin);
-    g.add(t, waist, basin);
-    const tl = label('Cooling tower', 'Natural draft');
-    tl.position.set(0, 52, 0);
-    g.add(tl);
-    add(g, x, 0, z);
-    towerTops.push(new THREE.Vector3(x, 48, z));
-  };
-  tower(240, 175);
-  tower(310, 175);
+  const rihand = new THREE.Mesh(new THREE.BoxGeometry(155, 1.5, 82), waterMat(0x2f7faa));
+  rihand.position.y = 0.75;
+  waters.push(rihand);
+  add(part('c-outfall', 'z-cw', rihand, 0, 8, 0, 'Rihand Reservoir / outfall', 'Once-through CW · no cooling tower'), 275, 0, 180);
+  const channel = new THREE.Mesh(new THREE.BoxGeometry(150, 1.2, 18), waterMat(0x3c8eac));
+  channel.position.y = 0.6;
+  waters.push(channel);
+  root.add(channel);
+  channel.position.set(230, 0.6, 115);
 
   add(box(12, 4, 8, 0x66bb6a, 'c-chlorine', 'z-cw', 'ClO₂ Plant', 'Biocide dosing'), 210, 2, 150);
 
@@ -496,7 +582,7 @@ export function buildPlant() {
   /* ═══ ASH (south) ═══ */
   add(cyl(4, 4, 14, 10, 0xb0a090, 'c-flyash', 'z-ash', 'Fly ash silo', 'Pneumatic'), 25, 0, 130);
   add(box(8, 4, 6, COL.steel, 'c-bottom-ash', 'z-ash', 'BA slurry pump', 'To dyke'), 0, 2, 115);
-  add(box(40, 3, 25, 0xc0b8a8, 'c-dyke', 'z-ash', 'Ash dyke', '400 acres'), -90, 1.5, 200);
+  add(box(40, 3, 25, 0xc0b8a8, 'c-dyke', 'z-ash', 'Offsite ash dyke', 'Slurry line · ~12 km'), -250, 1.5, 220);
 
   /* ═══ H₂ & GRID (north-east) ═══ */
   add(box(16, 8, 10, 0xbbdefb, 'c-h2', 'z-h2', 'H₂ Plant', 'Electrolyser'), 155, 4, 85);
@@ -513,65 +599,85 @@ export function buildPlant() {
   pipes.name = 'pipes';
 
   pipes.add(pipe(
-    [[-240, 3, -120], [-165, 8, -70], [-115, 20, -45], [-95, 10, -20], [0, 22, -20]],
-    0.65, COL.coal, 'Coal / PF',
+    [[-240, 3, -120], [-195, 5, -95], [-165, 10, -70], [-115, 22, -45], [-95, 11, -20], [0, 18, -20]],
+    0.65, COL.coal, 'Coal: mine → furnace', 0.75, 'coal',
   ));
   pipes.add(pipe(
-    [[0, 44, -20], [85, 10, -15], [115, 10, -15], [148, 10, -15], [170, 8, -15]],
-    0.85, COL.steam, 'Main steam',
+    [[-56, 6, 16], [-15, 8, -5], [38, 8, -72], [12, 16, -32], [0, 18, -20]],
+    0.48, 0x77c66e, 'Secondary air: FD → APH → furnace', 1.1, 'air',
   ));
   pipes.add(pipe(
-    [[148, 8, -15], [120, 14, -40], [80, 22, -35], [40, 30, -28], [0, 36, -20]],
-    0.55, COL.reheat, 'Cold reheat',
+    [[-72, 6, -6], [-35, 7, -30], [38, 7, -72], [-95, 9, -20], [0, 18, -20]],
+    0.42, 0x9ad47a, 'Primary air: PA → APH → mill → burner', 1.25, 'air',
   ));
   pipes.add(pipe(
-    [[148, 6, -15], [140, 4, 15], [130, 4, 45]],
-    0.75, COL.steam, 'LP exhaust',
+    [[0, 49, -20], [34, 38, -20], [70, 20, -15], [98, 12, -15]],
+    0.82, COL.steam, 'Main steam: SH → HP turbine', 1.25, 'steam',
   ));
   pipes.add(pipe(
-    [[-155, 8, 155], [-95, 10, 140], [58, 6, 25], [0, 12, -20]],
-    0.5, COL.feed, 'DM feedwater',
+    [[108, 12, -12], [78, 18, -38], [35, 28, -38], [0, 36, -20]],
+    0.52, 0xb98ca5, 'Cold reheat: HP exhaust → reheater', 0.9, 'steam',
   ));
   pipes.add(pipe(
-    [[130, 5, 45], [155, 4, 120], [240, 4, 175], [310, 4, 175]],
-    0.75, COL.cwHot, 'CW hot OUT',
+    [[0, 40, -20], [38, 32, -4], [82, 18, -4], [118, 12, -12]],
+    0.58, COL.reheat, 'Hot reheat: reheater → IP turbine', 1.15, 'steam',
   ));
   pipes.add(pipe(
-    [[310, 4, 175], [240, 4, 175], [155, 4, 120], [130, 4, 48]],
-    0.75, COL.cwCold, 'CW cold IN',
+    [[142, 8, -15], [145, 5, 8], [132, 4, 42]],
+    0.75, 0xc38ca7, 'LP exhaust → condenser', 0.8, 'steam',
   ));
   pipes.add(pipe(
-    [[0, 28, -20], [-25, 12, -145], [45, 14, -160], [115, 30, -210]],
-    0.8, COL.flue, 'Flue gas',
+    [[132, 4, 42], [108, 4, 52], [82, 5, 58], [-95, 12, 140], [58, 5, 25], [70, 5, 30], [38, 6, 32], [0, 18, -20]],
+    0.52, COL.feed, 'Condensate / feedwater loop', 0.95, 'feedwater',
+  ));
+  pipes.add(pipe(
+    [[-155, 8, 155], [-122, 10, 147], [-95, 12, 140]],
+    0.32, 0x91dff0, 'DM make-up → deaerator', 0.7, 'feedwater',
+  ));
+  pipes.add(pipe(
+    [[330, 4, 180], [270, 4, 180], [150, 5, 118], [132, 4, 48]],
+    0.8, COL.cwCold, 'Rihand intake → CW pumps → condenser', 1.05, 'cooling',
+  ));
+  pipes.add(pipe(
+    [[132, 6, 42], [160, 7, 92], [230, 4, 115], [320, 4, 160]],
+    0.8, COL.cwHot, 'Condenser → hot-water discharge', 0.9, 'cooling',
+  ));
+  pipes.add(pipe(
+    [[0, 28, -20], [18, 26, -48], [38, 18, -72], [-25, 17, -145], [18, 11, -118], [45, 16, -160], [115, 30, -210]],
+    0.82, COL.flue, 'Flue gas: boiler → APH → ESP → ID fan → stack', 0.7, 'flue',
   ));
   pipes.add(pipe(
     [[185, 12, -15], [165, 14, -25], [205, 10, -55], [245, 6, -95]],
-    0.5, COL.power, 'Power evacuation',
+    0.5, COL.power, 'Generator → GT → switchyard → grid', 1.3, 'power',
   ));
   pipes.add(pipe(
     [[155, 6, 85], [185, 10, -15]],
-    0.3, COL.h2, 'H₂ to generator',
+    0.3, COL.h2, 'H₂ to generator', 0.7, 'h2',
   ));
   pipes.add(pipe(
-    [[45, 8, -160], [25, 6, 130]],
-    0.4, COL.ash, 'Fly ash',
+    [[-25, 7, -145], [0, 8, -60], [25, 6, 130]],
+    0.4, COL.ash, 'ESP fly ash → silo', 0.85, 'ash',
   ));
   pipes.add(pipe(
-    [[0, 4, -5], [0, 3, 115], [-90, 2, 200]],
-    0.4, COL.ash, 'Bottom ash slurry',
+    [[0, 4, -5], [0, 3, 115], [-90, 2, 200], [-250, 2, 220]],
+    0.4, COL.ash, 'Bottom ash → offsite dyke', 0.7, 'ash',
   ));
 
   root.add(pipes);
 
+  const industrial = createIndustrialDetail({ waters });
+  root.add(industrial.group);
+  movers.push(...industrial.movers);
+
   positions['c-furnace'] = furnace;
 
   return { root, pickables, spinners, glows, furnace, positions,
-    stackTop, towerTops, waters, pipeFlows: pipeFlows.slice() };
+    stackTop, towerTops, waters, movers, pipeFlows: pipeFlows.slice() };
 }
 
 export function pipeLegend() {
   return [
-    ['Coal / PF', COL.coal], ['Steam', COL.steam], ['Reheat', COL.reheat],
+    ['Coal / PF', COL.coal], ['Combustion air', 0x77c66e], ['Steam', COL.steam], ['Reheat', COL.reheat],
     ['Feedwater', COL.feed], ['CW hot OUT', COL.cwHot], ['CW cold IN', COL.cwCold],
     ['Flue gas', COL.flue], ['Power', COL.power], ['H₂', COL.h2], ['Ash', COL.ash],
   ];

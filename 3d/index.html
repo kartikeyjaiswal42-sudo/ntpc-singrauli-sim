@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="data:,"/>
   <title>NTPC Singrauli Stage-II · 3D Plant Simulation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
@@ -13,6 +14,35 @@
     <div id="viewport-wrap">
       <canvas id="viewport"></canvas>
       <div id="labels"></div>
+      <div class="hover-tip" id="hover-tip"></div>
+      <div class="telemetry" aria-label="Live plant telemetry">
+        <div class="telemetry-card primary">
+          <span>Net export</span>
+          <strong id="metric-net">—</strong>
+          <small>MW to grid</small>
+        </div>
+        <div class="telemetry-card">
+          <span>Net heat rate</span>
+          <strong id="metric-heat">—</strong>
+          <small>kcal/kWh</small>
+        </div>
+        <div class="telemetry-card" id="metric-so2-card">
+          <span>Stack SO₂</span>
+          <strong id="metric-so2">—</strong>
+          <small>mg/Nm³ · limit 200</small>
+        </div>
+        <div class="telemetry-card">
+          <span>Condenser vacuum</span>
+          <strong id="metric-vacuum">—</strong>
+          <small>kg/cm²(g)</small>
+        </div>
+      </div>
+      <div class="scene-tools">
+        <button type="button" class="scene-tool" id="btn-labels">Equipment labels</button>
+        <button type="button" class="scene-tool active" id="btn-flow">Process flow</button>
+        <button type="button" class="scene-tool" id="btn-rotate">Auto orbit</button>
+      </div>
+      <div class="scene-hint">Click equipment to inspect · drag to orbit · scroll to zoom</div>
     </div>
 
     <div class="zone-nav-bar" id="zone-nav"></div>
@@ -20,7 +50,7 @@
     <header class="topbar">
       <div class="brand">
         <h1>NTPC Singrauli · Stage-II</h1>
-        <p>3D plant · coal → grid · drag to orbit · scroll to zoom</p>
+        <p><i class="live-dot"></i> Live process model · coal → 400 kV grid</p>
       </div>
       <div class="hero" id="hero">—</div>
       <div class="status-pill good" id="status-pill">On bars</div>
@@ -28,7 +58,7 @@
       <nav class="modes">
         <a class="mode active" href="./">3D</a>
         <a class="mode" href="../illustrated/">2D</a>
-        <a class="mode" href="../earth/">🛰️ Real Site</a>
+        <a class="mode" href="../earth/">Real Site</a>
       </nav>
     </header>
 
@@ -38,6 +68,18 @@
         <button type="button" class="stab" data-tab="controls">Controls <span class="stab-n">17</span></button>
       </div>
       <div class="side-panel" id="panel-inspect">
+        <section class="cycle-map">
+          <div class="cycle-map-head">
+            <div>
+              <span>Interactive operating diagram</span>
+              <strong id="path-title">How power is generated</strong>
+            </div>
+            <button type="button" class="follow-btn" id="btn-follow">Follow path</button>
+          </div>
+          <p id="path-note">Select a system to isolate its real equipment order and animated flow.</p>
+          <div class="path-tabs" id="path-tabs"></div>
+          <div class="path-steps" id="path-steps"></div>
+        </section>
         <article class="detail" id="detail">
           <p class="detail-placeholder">Click any labelled 3D component or pick from the list.</p>
         </article>

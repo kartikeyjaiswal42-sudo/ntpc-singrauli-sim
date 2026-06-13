@@ -3,7 +3,6 @@
 //   • image-based environment lighting (RoomEnvironment → PMREM) so metal/water reflect
 //   • Plume: pooled sprite smoke/steam for the stack and cooling towers
 import * as THREE from 'three';
-import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 let _soft = null;
@@ -23,16 +22,64 @@ function softTexture() {
 }
 
 export function setupSky(scene, sunDir) {
-  const sky = new Sky();
-  sky.scale.setScalar(9000);
-  const u = sky.material.uniforms;
-  u.turbidity.value = 4;
-  u.rayleigh.value = 2.3;
-  u.mieCoefficient.value = 0.004;
-  u.mieDirectionalG.value = 0.82;
-  u.sunPosition.value.copy(sunDir);
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(7000, 48, 24),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      depthWrite: false,
+      toneMapped: false,
+      uniforms: {
+        zenith: { value: new THREE.Color(0x69a8d3) },
+        horizon: { value: new THREE.Color(0xd8e6ec) },
+        sunColor: { value: new THREE.Color(0xfff0c4) },
+        sunDirection: { value: sunDir.clone().normalize() },
+      },
+      vertexShader: `
+        varying vec3 vWorld;
+        void main() {
+          vWorld = (modelMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 zenith;
+        uniform vec3 horizon;
+        uniform vec3 sunColor;
+        uniform vec3 sunDirection;
+        varying vec3 vWorld;
+        void main() {
+          vec3 dir = normalize(vWorld);
+          float h = smoothstep(-0.05, 0.62, dir.y);
+          vec3 col = mix(horizon, zenith, h);
+          float sun = pow(max(dot(dir, sunDirection), 0.0), 650.0);
+          col += sunColor * sun * 0.75;
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+    }),
+  );
   scene.add(sky);
   return sky;
+}
+
+export function setupCloudField(scene) {
+  const tex = softTexture();
+  const group = new THREE.Group();
+  const material = new THREE.SpriteMaterial({
+    map: tex, color: 0xffffff, transparent: true, opacity: 0.16,
+    depthWrite: false, fog: true,
+  });
+  [
+    [-260, 190, -380, 150, 38], [-70, 225, -480, 190, 45], [190, 205, -420, 165, 36],
+    [420, 235, -520, 220, 52], [-380, 250, -580, 190, 42], [80, 270, -700, 240, 55],
+  ].forEach(([x, y, z, w, h]) => {
+    const s = new THREE.Sprite(material.clone());
+    s.position.set(x, y, z);
+    s.scale.set(w, h, 1);
+    group.add(s);
+  });
+  scene.add(group);
+  return group;
 }
 
 export function setupEnvironment(scene, renderer) {

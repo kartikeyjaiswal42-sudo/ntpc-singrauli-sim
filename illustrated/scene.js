@@ -225,7 +225,7 @@ export function buildScene() {
   </g>`;
 
   const zoneCw = `<g class="zone" id="z-cw">
-    ${lbl(1580, 820, 'CIRCULATING WATER', 'zone-title')}
+    ${lbl(1580, 820, 'ONCE-THROUGH COOLING WATER', 'zone-title')}
   </g>`;
 
   const zoneEnv = `<g class="zone" id="z-env">
@@ -246,7 +246,7 @@ export function buildScene() {
   ${comp('c-mgr', 'z-fuel', 10, 748, 300, 50, `
     <line x1="20" y1="778" x2="300" y2="778" stroke="#5a4a3a" stroke-width="5"/>
     <g fill="#3a3a3a"><rect x="40" y="762" width="50" height="16" rx="3"/><rect x="110" y="762" width="50" height="16" rx="3"/><rect x="180" y="762" width="50" height="16" rx="3"/><rect x="250" y="762" width="50" height="16" rx="3"/></g>
-    ${lbl(160, 756, 'MGR railway · 22 km from Nigahi', 'unit-name xs')}`)}
+    ${lbl(160, 756, 'MGR railway · Jayant / Bina mines', 'unit-name xs')}`)}
   ${comp('c-hopper', 'z-fuel', 250, 700, 80, 60, `
     <path d="M260,758 L280,720 L300,758 Z" fill="#6b7280"/>
     ${lbl(280, 712, 'Track hopper', 'unit-name xs')}`)}
@@ -343,8 +343,8 @@ export function buildScene() {
     <rect x="1060" y="470" width="160" height="56" rx="10" fill="#dff0fb" stroke="#7fb4d8" stroke-width="1.5"/>
     <g fill="#7fb4d8">${Array.from({ length: 24 }, (_, i) => `<circle cx="${1070 + (i % 8) * 18}" cy="${488 + Math.floor(i / 8) * 14}" r="2.5"/>`).join('')}</g>
     ${lbl(1140, 540, 'Surface condenser', 'unit-name xs')}
-    ${lbl(1065, 462, '↗ hot CW OUT', 'unit-name xs')}
-    ${lbl(1180, 538, '↙ cold CW IN', 'unit-name xs')}
+    ${lbl(1065, 462, '↗ hot discharge', 'unit-name xs')}
+    ${lbl(1180, 538, '↙ Rihand CW intake', 'unit-name xs')}
     <path d="M1240,490 L1280,490" stroke="#e8472a" stroke-width="4" marker-end="url(#arrHot)"/>
     <path d="M1060,510 L1020,510" stroke="#2f8fe0" stroke-width="4"/>`)}
   ${comp('c-tdbfp', 'z-turbine', 920, 390, 60, 50, `
@@ -365,15 +365,18 @@ export function buildScene() {
     <rect x="1362" y="610" width="24" height="70" rx="6" fill="#2f8fe0"/>
     <g transform="translate(1342,630)"><g class="spin" stroke="#dff0fb" stroke-width="2"><line x1="0" y1="-8" x2="0" y2="8"/></g></g>
     ${lbl(1350, 698, 'CW pumps ×2', 'unit-name xs')}`)}
-  ${comp('c-ct', 'z-cw', 1520, 460, 280, 320, `
-    ${tower(1520, 480, 120, 280)}${tower(1700, 500, 100, 240)}
-    ${lbl(1580, 768, 'Cooling tower', 'unit-name xs')}
-    ${lbl(1750, 748, 'Cooling tower', 'unit-name xs')}`)}`;
+  ${comp('c-outfall', 'z-cw', 1500, 500, 300, 280, `
+    <rect x="1510" y="560" width="280" height="185" rx="18" fill="url(#waterGrad)" opacity="0.72" stroke="#2a8fd4" stroke-width="2"/>
+    <path d="M1510,600 C1560,575 1610,625 1660,600 C1710,575 1760,625 1790,605" fill="none" stroke="#bde8ff" stroke-width="4" opacity="0.8"/>
+    <path d="M1510,650 C1560,625 1610,675 1660,650 C1710,625 1760,675 1790,655" fill="none" stroke="#bde8ff" stroke-width="4" opacity="0.65"/>
+    <rect x="1410" y="680" width="180" height="28" rx="8" fill="#e8472a" opacity="0.45"/>
+    ${lbl(1650, 590, 'Rihand Reservoir', 'unit-name')}
+    ${lbl(1650, 724, 'Once-through intake / hot-water discharge', 'unit-name xs')}`)}`;
 
   const envEquip = `
   ${comp('c-flue', 'z-env', 680, 680, 520, 50, `
     <rect x="690" y="692" width="500" height="24" rx="4" fill="#b0bec5" opacity="0.35"/>
-    ${lbl(940, 708, 'Flue gas duct · APH → ESP → FGD → stack', 'unit-name xs')}`)}
+    ${lbl(940, 708, 'Flue gas duct · APH → ESP → ID fan → FGD/bypass → stack', 'unit-name xs')}`)}
   ${comp('c-esp', 'z-env', 860, 640, 130, 100, `
     <rect x="870" y="650" width="110" height="80" rx="8" fill="#c7d2dc" stroke="#8795a3" stroke-width="1.5"/>
     <g stroke="#8795a3" stroke-width="2">${[0, 1, 2, 3, 4, 5].map((i) => `<line x1="${888 + i * 14}" y1="658" x2="${888 + i * 14}" y2="722"/>`).join('')}</g>

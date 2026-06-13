@@ -15,9 +15,9 @@ const shared = {
 
 export const EQUIPMENT = {
   'c-mgr': {
-    zone: 'z-fuel', name: 'MGR railway (22 km)', tag: 'Coal transport',
-    body: 'Merry-Go-Round system from NCL Nigahi mines. Bottom-discharge wagons unload while the rake moves at ~0.8 km/h along a 220 m track hopper — no stopping for unloading.',
-    specs: ['Rake: ~59 wagons', 'Annual coal: ~115 LMT', 'Track: dedicated MGR loop'],
+    zone: 'z-fuel', name: 'MGR railway from NCL mines', tag: 'Coal transport',
+    body: 'The Merry-Go-Round railway brings coal from Northern Coalfields mines serving Singrauli, including Jayant and Bina. Bottom-discharge wagons unload into the track hopper for continuous conveyor handling.',
+    specs: ['Coal source: Jayant / Bina mines', 'Track: dedicated MGR loop'],
     metrics: shared.coal,
   },
   'c-hopper': {
@@ -64,7 +64,7 @@ export const EQUIPMENT = {
   },
   'c-chlorine': {
     zone: 'z-cw', name: 'Chlorination / ClO₂ plant', tag: 'CW biocide',
-    body: 'Chlorine or chlorine dioxide dosing prevents biofouling in condenser tubes and cooling tower fill. Without biocide, slime layers destroy vacuum and raise heat rate.',
+    body: 'Chlorine or chlorine dioxide dosing prevents biofouling in the once-through CW intake and condenser tubes. Without biocide, slime layers reduce heat transfer, destroy vacuum, and raise heat rate.',
     specs: ['Dosing: ClO₂ continuous', 'Monitoring: residual chlorine'],
     metrics: (r) => [['ClO₂ active', r.inputs.clO2On ? 'ON' : 'OFF'], ['CW ΔT', `${fmt(r.cwOutlet - r.cwInlet, 1)} °C`]],
   },
@@ -88,7 +88,7 @@ export const EQUIPMENT = {
   },
   'c-rh': {
     zone: 'z-boiler', name: 'Reheater', tag: '537 °C reheat',
-    body: 'Cold reheat steam (from IP exhaust) returns to reheater pendant tubes and exits at 537 °C / 41.8 kg/cm². Burner tilt primarily controls reheat temperature.',
+    body: 'Cold reheat steam from the HP turbine exhaust returns to boiler reheater tubes, then hot reheat steam enters the IP turbine at about 537 °C. Burner tilt primarily controls reheat temperature.',
     specs: ['Reheat out: 537 °C', 'Tilt range: ±30°'],
     metrics: (r) => [['Burner tilt', `${r.inputs.burnerTilt > 0 ? '+' : ''}${r.inputs.burnerTilt}°`], ['MS temp', `${fmt(r.msT, 0)} °C`]],
   },
@@ -129,9 +129,9 @@ export const EQUIPMENT = {
     metrics: (r) => [['FD fan', r.inputs.fdFanOn ? 'RUNNING' : 'TRIPPED'], ['Combustion air', `${fmt(r.airKgh / 1000, 0)} t/h`]],
   },
   'c-idf': {
-    zone: 'z-boiler', name: 'ID fan (induced draft)', tag: 'Flue gas draft',
-    body: 'Induced draft fan pulls flue gas through APH → ESP → FGD → stack. Maintains furnace negative pressure. ID fan failure causes rapid load reduction.',
-    specs: ['Location: flue gas outlet', 'Controls furnace draft'],
+    zone: 'z-env', name: 'ID fan (induced draft)', tag: 'Flue gas draft',
+    body: 'The induced draft fan sits downstream of the ESP and pulls flue gas through the boiler rear pass and air preheater. It maintains negative furnace pressure and pushes gas toward the FGD retrofit and stack.',
+    specs: ['Order: APH → ESP → ID fan', 'Controls furnace draft'],
     metrics: (r) => [['ID fan', r.inputs.idFanOn ? 'RUNNING' : 'OFF'], ['Flue gas', `${fmt(r.flueNm3h / 1000, 0)}k Nm³/h`]],
   },
   'c-paf': {
@@ -172,13 +172,31 @@ export const EQUIPMENT = {
   },
   'c-cond': {
     zone: 'z-turbine', name: 'Surface condenser', tag: 'CW inlet / outlet',
-    body: 'LP exhaust steam condenses on outside of titanium/stainless tubes; CW flows inside tubes. Hot CW outlet (top) → cooling towers; cold return (bottom) → condenser inlet. Vacuum determines cycle efficiency.',
+    body: 'LP exhaust steam condenses outside titanium/stainless tubes while Rihand cooling water flows inside. The warmed once-through water leaves through the discharge channel. Vacuum determines cycle efficiency.',
     specs: ['Design vacuum: ~0.1 bar abs', 'Tube material: Ti/SS'],
     metrics: (r) => [
       ['CW inlet (cold)', `${fmt(r.cwInlet, 0)} °C`],
       ['CW outlet (hot)', `${fmt(r.cwOutlet, 1)} °C`],
       ['Vacuum', `${fmt(r.vacuumKgcm2g, 3)} kg/cm²(g)`],
     ],
+  },
+  'c-cep': {
+    zone: 'z-turbine', name: 'Condensate extraction pump', tag: 'Hotwell → LP heaters',
+    body: 'The CEP removes condensate from the condenser hotwell and sends it through the low-pressure regenerative heaters toward the deaerator.',
+    specs: ['Suction: condenser hotwell', 'Discharge: LP heater train'],
+    metrics: (r) => [['Condensate flow', `${fmt(r.steamTh, 0)} t/h`], ['Condenser vacuum', `${fmt(r.vacuumKgcm2g, 3)} kg/cm²(g)`]],
+  },
+  'c-lph': {
+    zone: 'z-turbine', name: 'Low-pressure heaters', tag: 'Regenerative feed heating',
+    body: 'LP turbine extraction steam heats condensate before the deaerator, reducing the boiler heat input required for each kilogram of steam.',
+    specs: ['Heating source: LP extractions', 'Location: condensate line'],
+    metrics: (r) => [['Condensate flow', `${fmt(r.steamTh, 0)} t/h`], ['Cycle efficiency', `${fmt(r.cycleEff * 100, 1)}%`]],
+  },
+  'c-hph': {
+    zone: 'z-turbine', name: 'High-pressure heaters', tag: 'Final feed heating',
+    body: 'After the boiler feed pump, HP turbine extraction steam raises feedwater temperature before it enters the economizer.',
+    specs: ['Heating source: HP/IP extractions', 'Location: BFP → economizer'],
+    metrics: (r) => [['Feedwater flow', `${fmt(r.steamTh, 0)} t/h`], ['Main steam pressure', `${fmt(r.msP, 0)} kg/cm²`]],
   },
   'c-tdbfp': {
     zone: 'z-turbine', name: 'TDBFP (steam-driven feed pump)', tag: 'Main feed pump',
@@ -199,21 +217,21 @@ export const EQUIPMENT = {
     metrics: (r) => [['Feed flow', `${fmt(r.steamTh, 0)} t/h`], ['MS pressure', `${fmt(r.msP, 0)} kg/cm²`]],
   },
   'c-cwp': {
-    zone: 'z-cw', name: 'Circulating water pumps', tag: 'Condenser ↔ towers',
-    body: 'Two (or more) vertical CW pumps circulate water: condenser hot outlet → cooling tower distribution → cold basin → condenser inlet. Speed affects ΔT and vacuum.',
-    specs: ['Type: vertical turbine', 'Design ΔT: 9.5 °C'],
+    zone: 'z-cw', name: 'Circulating water pumps', tag: 'Rihand intake → condenser',
+    body: 'Vertical CW pumps draw screened water from the Rihand intake and push it through condenser tubes. Because Stage-I/II use once-through cooling, the warmed water leaves through the discharge channel instead of returning to cooling towers.',
+    specs: ['Type: vertical turbine', 'System: open / once-through', 'Design ΔT: 9.5 °C'],
     metrics: (r) => [
       ['Pump speed', `${r.inputs.cwPumpPct}%`],
       ['CW flow', `${fmt(r.cwM3h, 0)} m³/h`],
     ],
   },
-  'c-ct': {
-    zone: 'z-cw', name: 'Cooling towers (×2 induced draft)', tag: 'Heat rejection',
-    body: 'Hyperbolic induced-draft towers cool hot CW by evaporation and air contact. Cold water collected in basin returns to CW pumps. Performance tracks ambient wet-bulb.',
-    specs: ['Type: hyperbolic ID', 'Cells: dual tower'],
+  'c-outfall': {
+    zone: 'z-cw', name: 'Hot-water discharge channel', tag: 'Once-through CW return',
+    body: 'Singrauli Stage-I and Stage-II use once-through cooling. Water drawn from the Rihand Reservoir passes through the condenser once, then leaves through the hot-water discharge channel.',
+    specs: ['Cooling system: open / once-through', 'Source and receiving body: Rihand Reservoir'],
     metrics: (r) => [
-      ['Hot CW in', `${fmt(r.cwOutlet, 1)} °C`],
-      ['Cold CW out', `${fmt(r.cwInlet, 0)} °C`],
+      ['Discharge water', `${fmt(r.cwOutlet, 1)} °C`],
+      ['Temperature rise', `${fmt(r.cwDeltaT, 1)} °C`],
     ],
   },
   'c-esp': {
@@ -226,9 +244,9 @@ export const EQUIPMENT = {
     ],
   },
   'c-fgd': {
-    zone: 'z-env', name: 'Wet FGD plant (limestone)', tag: 'SO₂ scrubbing',
-    body: 'Flue gas enters absorber; limestone slurry reacts with SO₂. Oxidation air produces gypsum (CaSO₄·2H₂O). Recycle pumps maintain slurry density. ~96% SO₂ removal.',
-    specs: ['Sorbent: limestone slurry', 'By-product: gypsum'],
+    zone: 'z-env', name: 'Wet FGD retrofit / bypass', tag: 'SO₂ scrubbing',
+    body: 'The retrofit path routes flue gas through a wet-limestone absorber when in service. Limestone slurry captures SO₂ and oxidation produces gypsum; the simulation toggle also demonstrates bypass operation.',
+    specs: ['Retrofit equipment', 'Sorbent: limestone slurry', 'By-product: gypsum'],
     metrics: (r) => [
       ['FGD', r.inputs.fgdOn ? 'RUNNING' : 'BYPASS'],
       ['SO₂ stack', `${fmt(r.so2OutMg, 0)} mg/Nm³`],
@@ -243,8 +261,8 @@ export const EQUIPMENT = {
   },
   'c-flue': {
     zone: 'z-env', name: 'Flue gas ducting', tag: 'Boiler → stack path',
-    body: 'Large insulated ducts carry flue gas: furnace → APH → ESP → FGD booster fan → absorber → stack. Expansion joints and dampers allow isolation.',
-    specs: ['Path: APH→ESP→FGD→stack', 'Insulated steel duct'],
+    body: 'Large insulated ducts carry flue gas in the correct order: furnace and rear-pass heating surfaces → APH → ESP → ID fan → FGD retrofit or bypass → stack.',
+    specs: ['Path: APH → ESP → ID fan → FGD/bypass → stack', 'Insulated steel duct'],
     metrics: (r) => [['Flue flow', `${fmt(r.flueNm3h / 1000, 0)}k Nm³/h`], ['CO₂', `${fmt(r.co2Th, 0)} t/h`]],
   },
   'c-flyash': {
@@ -260,9 +278,9 @@ export const EQUIPMENT = {
     metrics: (r) => [['Bottom ash ≈', `${fmt(r.ashTh * 0.2, 0)} t/h`], ['Total ash', `${fmt(r.ashTh, 0)} t/h`]],
   },
   'c-dyke': {
-    zone: 'z-ash', name: 'Ash dyke (400 acres)', tag: 'Slurry disposal',
-    body: 'Engineered earthen dyke stores ash slurry. Decanted water returned; solids settle. Progressive closure and tree plantation for environmental compliance.',
-    specs: ['Area: ~400 acres', 'Decant water recycle'],
+    zone: 'z-ash', name: 'Offsite ash dyke', tag: 'Slurry disposal',
+    body: 'Bottom-ash slurry is pumped to the offsite ash dyke, where solids settle and decanted water is returned through the ash-water recirculation system.',
+    specs: ['Approx. 12 km from station', 'Decant water recycle'],
     metrics: (r) => [['Ash total', `${fmt(r.ashTh, 0)} t/h`], ['Fly/bottom split', '80/20']],
   },
   'c-h2': {
@@ -308,8 +326,8 @@ export const EQUIPMENT_GROUPS = [
   { name: 'Coal & CHP', ids: ['c-mgr', 'c-hopper', 'c-chp', 'c-bunker', 'c-mill'] },
   { name: 'Water treatment', ids: ['c-forebay', 'c-dm', 'c-deaerator', 'c-chlorine'] },
   { name: 'Boiler island', ids: ['c-drum', 'c-eco', 'c-sh', 'c-rh', 'c-tubes', 'c-furnace', 'c-burner', 'c-bcp', 'c-fd', 'c-idf', 'c-paf', 'c-aph'] },
-  { name: 'Turbine & condenser', ids: ['c-hp', 'c-ip', 'c-lp', 'c-gen', 'c-cond', 'c-tdbfp', 'c-mdbfp', 'c-bfp-boost'] },
-  { name: 'Cooling water', ids: ['c-cwp', 'c-ct'] },
+  { name: 'Turbine & feedwater', ids: ['c-hp', 'c-ip', 'c-lp', 'c-gen', 'c-cond', 'c-cep', 'c-lph', 'c-deaerator', 'c-tdbfp', 'c-mdbfp', 'c-bfp-boost', 'c-hph'] },
+  { name: 'Once-through cooling water', ids: ['c-cwp', 'c-outfall'] },
   { name: 'Flue gas & emissions', ids: ['c-flue', 'c-esp', 'c-fgd', 'c-stack'] },
   { name: 'Ash handling', ids: ['c-bah', 'c-flyash', 'c-bottom-ash', 'c-dyke'] },
   { name: 'Hydrogen & grid', ids: ['c-h2', 'c-ipb', 'c-gt', 'c-uat', 'c-yard', 'c-compressor'] },
@@ -319,7 +337,7 @@ export const EQUIPMENT_GROUPS = [
 export const COMPONENTS = Object.fromEntries(
   Object.entries({
     'z-fuel': 'c-mill', 'z-boiler': 'c-furnace', 'z-turbine': 'c-gen',
-    'z-dm': 'c-dm', 'z-cw': 'c-ct', 'z-env': 'c-esp', 'z-ash': 'c-dyke',
+    'z-dm': 'c-dm', 'z-cw': 'c-outfall', 'z-env': 'c-esp', 'z-ash': 'c-dyke',
     'z-h2': 'c-h2', 'z-grid': 'c-yard', 'z-aux': 'c-compressor',
   }).map(([z, c]) => [z, EQUIPMENT[c]]),
 );
